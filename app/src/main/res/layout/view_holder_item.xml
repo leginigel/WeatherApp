@@ -1,25 +1,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:paddingLeft="24dp"
-  android:paddingRight="24dp"
-  android:paddingTop="16dp"
-  android:paddingBottom="16dp"
-  android:orientation="vertical"
-  android:background="?attr/selectableItemBackground">
-
-  <TextView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textAppearance="@style/TextAppearance.AppCompat.Title"
-    android:text="@string/lorem_title" />
+    android:background="?attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:paddingLeft="24dp"
+    android:paddingTop="16dp"
+    android:paddingRight="24dp"
+    android:paddingBottom="16dp">
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:orientation="vertical">
+    <TextView
+        android:id="@+id/five_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="date"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    <TextView
+        android:id="@+id/five_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="cloudy"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="?android:textColorSecondary" />
+  </LinearLayout>
 
   <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-    android:textColor="?android:textColorSecondary"
-    android:text="@string/lorem_description" />
-
+      android:id="@+id/five_temperature"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      android:text="100C / 100C"
+      android:textAlignment="textEnd"
+      android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 </LinearLayout>

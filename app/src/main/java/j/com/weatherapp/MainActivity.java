@@ -1,34 +1,39 @@
 package j.com.weatherapp;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v4.widget.NestedScrollView;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.ImageView;
+import android.util.Log;
+import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import j.com.weatherapp.Data.CityWeather;
+import j.com.weatherapp.Data.VolleyWeather;
 
 public class MainActivity extends AppCompatActivity {
 
-    // True iff the shadow view between the card header and the RecyclerView
-    // is currently showing.
-    private boolean mIsShowingCardHeaderShadow;
+    private static String Tag = MainActivity.class.getSimpleName();
+    public static RequestQueue mRequestQueue;
+    public static String url ="content://com.j.provider.WeatherProvider/city";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setAdapter(
+                new WeatherFragmentPageAdapter(getSupportFragmentManager(), MainActivity.this));
+
+        mRequestQueue = Volley.newRequestQueue(this);
 
 //        Glide.with(this).asDrawable()
 //                .load("http://i.imgur.com/zKYUpWa.jpg")
@@ -37,51 +42,15 @@ public class MainActivity extends AppCompatActivity {
 //                .transition(DrawableTransitionOptions.withCrossFade())
 //                .into((ImageView) findViewById(R.id.background_image));
 
-        final RecyclerView rv = findViewById(R.id.card_recyclerview);
-        final LinearLayoutManager lm = new LinearLayoutManager(this);
-        rv.setLayoutManager(lm);
-        rv.setAdapter(new LoremIpsumAdapter(this));
-        rv.addItemDecoration(new DividerItemDecoration(this, lm.getOrientation()));
-
-        final View cardHeaderShadow = findViewById(R.id.card_header_shadow);
-        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView rv, int dx, int dy) {
-                // Animate the shadow view in/out as the user scrolls so that it
-                // looks like the RecyclerView is scrolling beneath the card header.
-                final boolean isRecyclerViewScrolledToTop =
-                        lm.findFirstVisibleItemPosition() == 0
-                                && lm.findViewByPosition(0).getTop() == 0;
-                if (!isRecyclerViewScrolledToTop && !mIsShowingCardHeaderShadow) {
-                    mIsShowingCardHeaderShadow = true;
-                    showOrHideView(cardHeaderShadow, true);
-                } else if (isRecyclerViewScrolledToTop && mIsShowingCardHeaderShadow) {
-                    mIsShowingCardHeaderShadow = false;
-                    showOrHideView(cardHeaderShadow, false);
-                }
-            }
-        });
-
-        final NestedScrollView nsv = findViewById(R.id.nestedscrollview);
-        nsv.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        nsv.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(
-                    NestedScrollView nsv, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (scrollY == 0 && oldScrollY > 0) {
-                    // Reset the RecyclerView's scroll position each time the card
-                    // returns to its starting position.
-                    rv.scrollToPosition(0);
-                    cardHeaderShadow.setAlpha(0f);
-                    mIsShowingCardHeaderShadow = false;
-                }
-            }
-        });
     }
 
-    private static void showOrHideView(View view, boolean shouldShow) {
-        view.animate().alpha(shouldShow ? 1f : 0f)
-                .setDuration(100)
-                .setInterpolator(new DecelerateInterpolator());
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mRequestQueue != null) {
+            mRequestQueue.cancelAll("GG");
+        }
     }
+
+
 }
