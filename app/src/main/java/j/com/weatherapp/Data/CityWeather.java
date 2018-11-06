@@ -127,7 +127,7 @@ public class CityWeather {
 
     public static final class CityWeatherEntry implements BaseColumns {
         public static final String PATH_CITY = "city";
-        public static final String CONTENT_AUTHORITY = "com.j.provider.WeatherProvider";
+        public static final String CONTENT_AUTHORITY = "com.j.provider.Data.WeatherProvider";
         private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
         // Content URI represents the base location for the table

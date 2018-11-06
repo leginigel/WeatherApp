@@ -21,7 +21,7 @@ public class WeatherProvider extends ContentProvider {
     public boolean onCreate() {
 
         mOpenDBHelper = new WeatherDBHelper(getContext());
-//        Log.d("Provider","onCreate " + sUriMatcher.match(Uri.parse("content://com.j.provider.WeatherProvider/city")));
+        Log.d("Provider","onCreate " + sUriMatcher.match(Uri.parse("content://com.j.provider.WeatherProvider/city")));
         return true;
     }
 

@@ -18,7 +18,11 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import j.com.weatherapp.Data.DayWeather;
@@ -46,18 +50,34 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ForecastsAdapter.ViewHolder holder, int position) {
 
-//        RequestOptions requestOptions =
-//                new RequestOptions().centerCrop()
-//                        .placeholder(R.drawable.ic_album_black_24dp);
-//
-//        Glide.with(mContext)
-//                .load(albumArt)
-//                .apply(requestOptions)
-//                .into(holder.albumImageView);
+        RequestOptions requestOptions =
+                new RequestOptions().centerCrop()
+                        .placeholder(R.drawable.ic_wb_sunny_black_24dp);
 
-        holder.fivedateTextView.setText(mDayForecast.get(position).getDateTime());
-//        holder.fivetextTextView.setText(mDayForecast.get(position));
-//        holder.fivetemperatureTextView.setText(mDayForecast.get(position));
+        String noIcon = String.valueOf(mDayForecast.get(position).getIcon());
+        if (mDayForecast.get(position).getIcon() < 10)
+            noIcon = "0" + noIcon;
+        String img_url = "https://developer.accuweather.com/sites/default/files/" + noIcon + "-s.png";
+        Glide.with(mContext)
+                .load(img_url)
+                .apply(requestOptions)
+                .into(holder.Icon);
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        DateFormat toFormat = new SimpleDateFormat("MM-dd");
+        String sDate = null;
+        try {
+            sDate = toFormat.format(df.parse(mDayForecast.get(position).getDateTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        holder.FiveDate.setText(sDate);
+//        holder.FiveDate.setText(mDayForecast.get(position).getDateTime());
+//        holder.fivetextTextView.setText(mDayForecast.get(position).get);
+        holder.MaxTemperature.setText(String.valueOf((int) mDayForecast.get(position).getMaxTemperature() + "°C"));
+        holder.MinTemperature.setText(String.valueOf((int)mDayForecast.get(position).getMinTemperature() + "°C"));
+        holder.Rain.setText(String.valueOf(mDayForecast.get(position).getRainProbability() + "%"));
     }
 
     @Override
@@ -67,13 +87,16 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView fivedateTextView, fivetextTextView, fivetemperatureTextView;
+        ImageView Icon;
+        TextView FiveDate, FiveText, MaxTemperature, MinTemperature, Rain;
         public ViewHolder(View itemView) {
             super(itemView);
-
-            fivedateTextView = itemView.findViewById(R.id.five_date);
-            fivetextTextView = itemView.findViewById(R.id.five_text);
-            fivetemperatureTextView = itemView.findViewById(R.id.five_temperature);
+            Icon = itemView.findViewById(R.id.weather_image);
+            FiveDate = itemView.findViewById(R.id.date);
+            FiveText = itemView.findViewById(R.id.five_text);
+            MaxTemperature = itemView.findViewById(R.id.max_temperature);
+            MinTemperature = itemView.findViewById(R.id.min_temperature);
+            Rain = itemView.findViewById(R.id.rain);
         }
     }
 }

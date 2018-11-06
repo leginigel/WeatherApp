@@ -12,6 +12,7 @@ public class DayWeather {
     double MaxRealFeelTemperature;
     double MinRealFeelTemperature;
     Integer RainProbability;
+    Integer Icon;
 
     public JSONObject getJsonWeather() {
         return JsonWeather;
@@ -30,6 +31,7 @@ public class DayWeather {
             setMinTemperature(
                     jsonWeather.getJSONObject("Temperature").getJSONObject("Minimum").getDouble("Value"));
             setRainProbability(jsonWeather.getJSONObject("Day").getInt("RainProbability"));
+            setIcon(jsonWeather.getJSONObject("Day").getInt("Icon"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -81,6 +83,14 @@ public class DayWeather {
 
     public void setRainProbability(Integer rainProbability) {
         RainProbability = rainProbability;
+    }
+
+    public Integer getIcon() {
+        return Icon;
+    }
+
+    public void setIcon(Integer icon) {
+        Icon = icon;
     }
 
     @Override

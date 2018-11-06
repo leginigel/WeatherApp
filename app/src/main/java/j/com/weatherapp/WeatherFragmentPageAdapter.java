@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 public class WeatherFragmentPageAdapter extends FragmentPagerAdapter {
 
-    final int PAGE_COUNT = 1;
+    final int PAGE_COUNT = 2;
     private String tabTitles[] = new String[] {"Taipei", "London", "Tab3"};
     private Context context;
 

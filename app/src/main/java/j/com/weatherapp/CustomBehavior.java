@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,7 +18,7 @@ import static android.support.design.widget.CoordinatorLayout.Behavior;
  * top of the {@link MainActivity}'s card view or FAB. It also is used to
  * adjust the layout so that the UI is displayed properly.
  */
-class CustomBehavior extends CoordinatorLayout.Behavior<NestedScrollView> {
+class CustomBehavior extends CoordinatorLayout.Behavior<SwipeRefreshLayout> {
 
   public CustomBehavior(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -25,7 +26,7 @@ class CustomBehavior extends CoordinatorLayout.Behavior<NestedScrollView> {
 
   @Override
   public boolean layoutDependsOn(
-          CoordinatorLayout parent, NestedScrollView child, View dependency) {
+          CoordinatorLayout parent, SwipeRefreshLayout child, View dependency) {
     // List the toolbar container as a dependency to ensure that it will
     // always be laid out before the child (which depends on the toolbar
     // container's height in onLayoutChild() below).
@@ -34,7 +35,7 @@ class CustomBehavior extends CoordinatorLayout.Behavior<NestedScrollView> {
 
   @Override
   public boolean onLayoutChild(
-          CoordinatorLayout parent, NestedScrollView child, int layoutDirection) {
+          CoordinatorLayout parent, SwipeRefreshLayout child, int layoutDirection) {
     // First layout the child as normal.
     parent.onLayoutChild(child, layoutDirection);
 
@@ -45,9 +46,9 @@ class CustomBehavior extends CoordinatorLayout.Behavior<NestedScrollView> {
     // Give the RecyclerView a maximum height to ensure the card will never
     // overlap the toolbar as it scrolls.
     final int rvMaxHeight =
-        child.getHeight()
+            child.getHeight()
 //            - fabHalfHeight
-//            - child.findViewById(R.id.card_title).getHeight()
+            - child.findViewById(R.id.card_title).getHeight()
             - child.findViewById(R.id.card_subtitle).getHeight();
     final MaxHeightRecyclerView rv = child.findViewById(R.id.card_recyclerview);
     rv.setMaxHeight(rvMaxHeight);
@@ -94,17 +95,17 @@ class CustomBehavior extends CoordinatorLayout.Behavior<NestedScrollView> {
     }
   }
 
-  @Override
-  public boolean onInterceptTouchEvent(
-          CoordinatorLayout parent, NestedScrollView child, MotionEvent ev) {
-    // Block all touch events that originate within the bounds of our
-    // NestedScrollView but do *not* originate within the bounds of its
-    // inner CardView and FloatingActionButton.
-    return ev.getActionMasked() == MotionEvent.ACTION_DOWN
-        && isTouchInChildBounds(parent, child, ev)
-        && !isTouchInChildBounds(parent, child.findViewById(R.id.cardview), ev)
-        /*&& !isTouchInChildBounds(parent, child.findViewById(R.id.fab), ev)*/;
-  }
+//  @Override
+////  public boolean onInterceptTouchEvent(
+////          CoordinatorLayout parent, SwipeRefreshLayout child, MotionEvent ev) {
+////    // Block all touch events that originate within the bounds of our
+////    // NestedScrollView but do *not* originate within the bounds of its
+////    // inner CardView and FloatingActionButton.
+////    return ev.getActionMasked() == MotionEvent.ACTION_DOWN
+////        && isTouchInChildBounds(parent, child, ev)
+////        && !isTouchInChildBounds(parent, child.findViewById(R.id.cardview), ev)
+////        /*&& !isTouchInChildBounds(parent, child.findViewById(R.id.fab), ev)*/;
+////  }
 
   private static boolean isTouchInChildBounds(
           ViewGroup parent, View child, MotionEvent ev) {

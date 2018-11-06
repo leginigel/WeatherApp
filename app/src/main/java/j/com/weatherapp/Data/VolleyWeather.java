@@ -38,9 +38,9 @@ public class VolleyWeather {
         this.mCityWeather = mCityWeather;
     }
 
-    public void fetchLocationKey(final PageFragment.VolleyResponseListener listener) {
+    public void fetchLocationKey(final String City, final PageFragment.VolleyResponseListener listener) {
         Log.d(Tag, "fetch location key");
-        String url = Host + "/locations/v1/search" + apiKey + language  + "&q=taipei";
+        String url = Host + "/locations/v1/search" + apiKey + language  + "&q=" + City;
 
         JsonArrayRequest req = new JsonArrayRequest(
                 JsonArrayRequest.Method.GET,
@@ -50,16 +50,14 @@ public class VolleyWeather {
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
-                            String key;
-                            String result = "Your key is " + response.getJSONObject(0).getString("Key");
+                            String result = City + "City key is " + response.getJSONObject(0).getString("Key");
                             Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
-                            key = response.getJSONObject(0).getString("Key");
+                            String key = response.getJSONObject(0).getString("Key");
                             mCityWeather.setLocationKey(key);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } finally {
-                            String key = "";
-                            fetchCurrentCondition(key, listener, false);
+                            fetchCurrentCondition(mCityWeather.getLocationKey(), listener, false);
                         }
                     }
                 },
@@ -68,7 +66,6 @@ public class VolleyWeather {
                     public void onErrorResponse(VolleyError error) {
                         VolleyLog.e("Error: ", error.getMessage());
                         error.printStackTrace();
-                        listener.onError(error.toString());
                     }
                 }
         )
@@ -81,50 +78,13 @@ public class VolleyWeather {
 //            }
 //        }
                 ;
-//        StringRequest req = new StringRequest(
-//                Host+url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//
-//                        try {
-////                            String result
-////                                    = response.getString("Key");
-//
-//                            String result = response;
-//                            Toast.makeText(Main2Activity.this, result, Toast.LENGTH_SHORT).show();
-//                            textView.setText(response);
-////                            setJson(response.getJSONObject(0));
-//
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        VolleyLog.e("Error: ", error.getMessage());
-//                        error.printStackTrace();
-//                    }
-//                }
-//        )
-//        {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                HashMap<String, String> headers = new HashMap<>();
-//                headers.put("Accept-Encoding", "gzip");
-//                return headers;
-//            }
-//        }
-        ;
         /* Add your Requests to the RequestQueue to execute */
         MainActivity.mRequestQueue.add(req);
     }
 
     public void fetchCurrentCondition
             (final String key, final PageFragment.VolleyResponseListener listener, final boolean exist) {
-        Log.d(Tag, "fetch current condition");
+        Log.i(Tag, "fetch current condition");
         String url = Host + "/currentconditions/v1/" + key + apiKey + detail + language;
 
         JsonArrayRequest req = new JsonArrayRequest(
@@ -164,33 +124,31 @@ public class VolleyWeather {
                             ContentValues values = dataCityStore(DateTime, IsDay, Temperature, RealFeel,
                              Humidity,  Pressure,  WeatherText,  CurrentCondition.toString());
 
-                            values.put(CityWeather.CityWeatherEntry.COLUMN_LOCATION_KEY, key);
-
                             ContentResolver resolver = mContext.getContentResolver();
                             Uri uri = Uri.parse(MainActivity.url);
                             if (exist) {
                                 String select = "("+ CityWeather.CityWeatherEntry.COLUMN_LOCATION_KEY
-                                        +"='"+ "4-315078_1_AL" +"')";
+                                        +"='"+ key +"')";
                                 try {
-                                    Log.d(Tag, "Update current condition");
+                                    Log.i(Tag, "Update current condition");
                                     resolver.update(uri, values, select, null);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             } else {
                                 try {
-                                    Log.d(Tag, "Insert current condition");
+                                    Log.i(Tag, "Insert current condition");
                                     resolver.insert(uri, values);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
-//                            Toast.makeText(mContext, response.getJSONObject(0).toString(), Toast.LENGTH_SHORT).show();
+                            Log.i(Tag, "fetch current condition");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } finally {
                             listener.onResponse(response);
-//                            fetchFiveForecasts(key, listener);
+                            fetchFiveForecasts(listener);
                         }
                     }
                 },
@@ -199,7 +157,7 @@ public class VolleyWeather {
                     public void onErrorResponse(VolleyError error) {
                         VolleyLog.e("Error: ", error.getMessage());
                         error.printStackTrace();
-                        listener.onError(error.toString());
+                        listener.onError(error);
                     }
                 }
         );
@@ -207,9 +165,9 @@ public class VolleyWeather {
         MainActivity.mRequestQueue.add(req);
     }
 
-    public void fetchFiveForecasts(final String key, final PageFragment.VolleyResponseListener listener) {
-        Log.d(Tag, "fetch Five Forecasts");
-        String url = Host + "/forecasts/v1/daily/5day/" + key + apiKey + detail + metric + language;
+    public void fetchFiveForecasts(final PageFragment.VolleyResponseListener listener) {
+        Log.i(Tag, "fetch Five Forecasts");
+        String url = Host + "/forecasts/v1/daily/5day/" + mCityWeather.getLocationKey() + apiKey + detail + metric + language;
 
         JsonObjectRequest req = new JsonObjectRequest(
                 JsonObjectRequest.Method.GET,
@@ -220,8 +178,10 @@ public class VolleyWeather {
                     public void onResponse(JSONObject response) {
                         try {
                             JSONArray FiveForecasts = response.getJSONArray("DailyForecasts");
+                            mCityWeather.getDayForecast().clear();
                             mCityWeather.setFiveForecasts(FiveForecasts);
-                            dataFiveForecastsCityUpdateDB(key, FiveForecasts.toString());
+                            dataFiveForecastsCityUpdateDB(FiveForecasts.toString());
+                            Log.i(Tag, "Success fetch Five Forecasts");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } finally {
@@ -234,7 +194,7 @@ public class VolleyWeather {
                     public void onErrorResponse(VolleyError error) {
                         VolleyLog.e("Error: ", error.getMessage());
                         error.printStackTrace();
-                        listener.onError(error.toString());
+                        listener.onError(error);
                     }
                 }
         );
@@ -244,7 +204,10 @@ public class VolleyWeather {
 
     public ContentValues dataCityStore(String DateTime, Boolean IsDay, double Temperature, double RealFeel,
                                 Integer Humidity, Integer Pressure, String WeatherText, String CurrentCondition) {
+
         ContentValues values = new ContentValues();
+
+        values.put(CityWeather.CityWeatherEntry.COLUMN_LOCATION_KEY, mCityWeather.getLocationKey());
         values.put(CityWeather.CityWeatherEntry.COLUMN_LOCAL_OBSERVATION_DATE_TIME, DateTime);
         values.put(CityWeather.CityWeatherEntry.COLUMN_DAY_TIME, IsDay);
         values.put(CityWeather.CityWeatherEntry.COLUMN_TEMPERATURE, Temperature);
@@ -258,11 +221,13 @@ public class VolleyWeather {
         return values;
     }
 
-    public void dataFiveForecastsCityUpdateDB (String key, String FiveForecasts){
-        ContentValues values = new ContentValues();
+    public void dataFiveForecastsCityUpdateDB (String FiveForecasts){
+
         Uri uri = Uri.parse(MainActivity.url);
+        ContentValues values = new ContentValues();
         values.put(CityWeather.CityWeatherEntry.COLUMN_FIVE_FORECASTS, FiveForecasts);
-        String select = "("+ CityWeather.CityWeatherEntry.COLUMN_LOCATION_KEY +"='" + key + "')";
+        String select = "("+ CityWeather.CityWeatherEntry.COLUMN_LOCATION_KEY +"='"
+                                                            + mCityWeather.getLocationKey() + "')";
 
         ContentResolver resolver = mContext.getContentResolver();
         resolver.update(uri, values, select, null);

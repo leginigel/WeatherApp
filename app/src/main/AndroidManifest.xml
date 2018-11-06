@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <provider
             android:name=".Data.WeatherProvider"
-            android:authorities="com.j.provider.WeatherProvider" />
+            android:authorities="com.j.provider.Data.WeatherProvider" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

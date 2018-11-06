@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static String Tag = MainActivity.class.getSimpleName();
     public static RequestQueue mRequestQueue;
-    public static String url ="content://com.j.provider.WeatherProvider/city";
+    public static String url ="content://com.j.provider.Data.WeatherProvider/city";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +35,6 @@ public class MainActivity extends AppCompatActivity {
                 new WeatherFragmentPageAdapter(getSupportFragmentManager(), MainActivity.this));
 
         mRequestQueue = Volley.newRequestQueue(this);
-
-//        Glide.with(this).asDrawable()
-//                .load("http://i.imgur.com/zKYUpWa.jpg")
-//                .apply(RequestOptions.placeholderOf(new ColorDrawable(Color.BLUE)))
-//                .apply(RequestOptions.centerCropTransform())
-//                .transition(DrawableTransitionOptions.withCrossFade())
-//                .into((ImageView) findViewById(R.id.background_image));
-
     }
 
     @Override
