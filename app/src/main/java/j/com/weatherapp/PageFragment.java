@@ -72,18 +72,21 @@ public class PageFragment extends Fragment {
         mVolleyWeather = new VolleyWeather(getActivity(), mCityWeather);
     }
 
+    TextView city, temperature, temperature_range, realfeel, weathertext, pressure, humidity, uv_index;
+    ForecastsAdapter rvAdapter;
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_viewpager, container, false);
 
         final RecyclerView rv = view.findViewById(R.id.card_recyclerview);
+        final View cardHeaderShadow = view.findViewById(R.id.card_header_shadow);
         final LinearLayoutManager lm = new LinearLayoutManager(getActivity());
-        final ForecastsAdapter rvAdapter = new ForecastsAdapter(getActivity(), mCityWeather.getDayForecast());
+        rvAdapter = new ForecastsAdapter(getActivity(), mCityWeather.getDayForecast());
         rv.setLayoutManager(lm);
         rv.setAdapter(rvAdapter);
         rv.addItemDecoration(new DividerItemDecoration(getActivity(), lm.getOrientation()));
 
-        final View cardHeaderShadow = view.findViewById(R.id.card_header_shadow);
         rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView rv, int dx, int dy) {
@@ -128,15 +131,13 @@ public class PageFragment extends Fragment {
                     mVolleyWeather.fetchCurrentCondition(mCityWeather.getLocationKey(), listener, false);
             }
         });
-
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-
         // TextViews set the data at listener response
-        final TextView city, temperature, temperature_range, realfeel, weathertext, pressure, humidity;
+
         city = view.findViewById(R.id.city);
         temperature = view.findViewById(R.id.temperature);
         temperature_range = view.findViewById(R.id.temperature_range);
@@ -144,34 +145,50 @@ public class PageFragment extends Fragment {
         weathertext = view.findViewById(R.id.weathertext);
         pressure = view.findViewById(R.id.pressure);
         humidity = view.findViewById(R.id.humidity);
+        uv_index = view.findViewById(R.id.uv);
 
         city.setText(mCity);
 
+        setListener();
+
+        checkCityExist();
+
+        return view;
+    }
+
+    private void setTodayCard() {
+        String MaxMin = null;
+        if (!mCityWeather.getDayForecast().isEmpty()) {
+            MaxMin = String.valueOf((int)mCityWeather.getDayForecast().get(0).getMaxTemperature())
+                    + "° / " + String.valueOf((int)mCityWeather.getDayForecast().get(0).getMinTemperature())
+                    + "° C";
+        }
+
+        temperature.setText(String.valueOf((int)mCityWeather.getCurTemperature() + "°C"));
+        temperature_range.setText(MaxMin);
+        realfeel.setText(String.valueOf((int)mCityWeather.getCurRealFeelTemperature() + "°C"));
+        weathertext.setText(mCityWeather.getCurWeatherText());
+        pressure.setText(String.valueOf(mCityWeather.getCurPressure() + " hpa"));
+        humidity.setText(String.valueOf(mCityWeather.getCurRelativeHumidity() + "%"));
+        uv_index.setText(mCityWeather.getCurUVIndexText());
+
+        rvAdapter.notifyDataSetChanged();
+        swipeContainer.setRefreshing(false);
+    }
+
+    private void setListener() {
         listener = new VolleyResponseListener() {
 
             @Override
             public void onError(VolleyError message) {
                 if (message instanceof TimeoutError || message instanceof NoConnectionError)
-                    Toast.makeText(getActivity(), "Network Error"+mCityWeather.getLocationKey(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Network Error", Toast.LENGTH_LONG).show();
 
                 if (mCityWeather.getLocationKey() != null) {
-                    String MaxMin = null;
 
-                    if (!mCityWeather.getDayForecast().isEmpty()) {
-                        MaxMin = String.valueOf((int)mCityWeather.getDayForecast().get(0).getMaxTemperature())
-                                + " / " + String.valueOf((int)mCityWeather.getDayForecast().get(0).getMinTemperature())
-                                + " °C";
-                    }
-                    temperature.setText(String.valueOf((int)mCityWeather.getCurTemperature() + "°C"));
-                    temperature_range.setText(MaxMin);
-                    realfeel.setText(String.valueOf((int)mCityWeather.getCurRealFeelTemperature() + "°C"));
-                    weathertext.setText(mCityWeather.getCurWeatherText());
-                    pressure.setText(String.valueOf(mCityWeather.getCurPressure() + " hpa"));
-                    humidity.setText(String.valueOf(mCityWeather.getCurRelativeHumidity() + "%"));
-
-                    rvAdapter.notifyDataSetChanged();
-                    swipeContainer.setRefreshing(false);
+                    setTodayCard();
                 }
+                Log.i(mCity + "onError","City Weather get LocationKey null");
             }
 
             @Override
@@ -181,31 +198,15 @@ public class PageFragment extends Fragment {
                     SharedPreferences.Editor editor = mSetting.edit();
                     editor.putString(mCity, mCityWeather.getLocationKey());
                     editor.apply();
-                    String MaxMin = null;
 
-                    if (!mCityWeather.getDayForecast().isEmpty()) {
-                        MaxMin = String.valueOf((int)mCityWeather.getDayForecast().get(0).getMaxTemperature())
-                                + " / " + String.valueOf((int)mCityWeather.getDayForecast().get(0).getMinTemperature())
-                                + " °C";
-                    }
-                    temperature.setText(String.valueOf((int)mCityWeather.getCurTemperature() + "°C"));
-                    temperature_range.setText(MaxMin);
-                    realfeel.setText(String.valueOf((int)mCityWeather.getCurRealFeelTemperature() + "°C"));
-                    weathertext.setText(mCityWeather.getCurWeatherText());
-                    pressure.setText(String.valueOf(mCityWeather.getCurPressure() + " hpa"));
-                    humidity.setText(String.valueOf(mCityWeather.getCurRelativeHumidity() + "%"));
+                    setTodayCard();
 
-                    rvAdapter.notifyDataSetChanged();
                     if (swipeContainer.isRefreshing())
-                        Toast.makeText(getActivity(), "Update Success"+mCityWeather.getLocationKey(), Toast.LENGTH_LONG).show();
-                    swipeContainer.setRefreshing(false);
+                        Toast.makeText(getActivity(), "Update Success", Toast.LENGTH_LONG).show();
                 }
+                Log.i(mCity + "onError","City Weather get LocationKey null");
             }
         };
-
-        checkCityExist();
-
-        return view;
     }
 
     public void checkCityExist(){
@@ -228,11 +229,11 @@ public class PageFragment extends Fragment {
             try{
                 cursor = mResolver.query(uri, projection, select, null, null);
                 if (cursor != null) {
-                    Log.i("Cursor", "Fetch Data...");
+                    Log.i(mCity + "Cursor", "Fetch Data...");
 
                     if(cursor.moveToFirst()) {
-                        Log.d("Cursor", cursor.getString(0) + "  " + cursor.getString(1));
-                        Log.i("Cursor", "move to first");
+                        Log.d(mCity + "Cursor", cursor.getString(0) + "  " + cursor.getString(1));
+                        Log.i(mCity + "Cursor", "move to first");
 
                         mCityWeather.setLocationKey(cursor.getString(0));
                         mCityWeather.setCurLocalObservationDateTime(cursor.getString(1));

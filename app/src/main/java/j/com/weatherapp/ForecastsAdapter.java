@@ -22,6 +22,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -63,22 +64,41 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
                 .apply(requestOptions)
                 .into(holder.Icon);
 
+        Calendar c = Calendar.getInstance();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-        DateFormat toFormat = new SimpleDateFormat("MM-dd");
+        DateFormat toFormat = new SimpleDateFormat("MM/dd");
         String sDate = null;
         try {
             sDate = toFormat.format(df.parse(mDayForecast.get(position).getDateTime()));
+            c.setTime(df.parse(mDayForecast.get(position).getDateTime()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        holder.FiveDate.setText(sDate);
-//        holder.FiveDate.setText(mDayForecast.get(position).getDateTime());
-//        holder.fivetextTextView.setText(mDayForecast.get(position).get);
-        holder.MaxTemperature.setText(String.valueOf((int) mDayForecast.get(position).getMaxTemperature() + "°C"));
-        holder.MinTemperature.setText(String.valueOf((int)mDayForecast.get(position).getMinTemperature() + "°C"));
+        String wDate = week(c.get(Calendar.DAY_OF_WEEK)) + sDate;
+
+        holder.FiveDate.setText(wDate);
+        holder.FiveText.setText(mDayForecast.get(position).getIconPhrase());
+        holder.MaxTemperature.setText(String.valueOf((int) mDayForecast.get(position).getMaxTemperature() + "° / "));
+        holder.MinTemperature.setText(String.valueOf((int)mDayForecast.get(position).getMinTemperature() + "° C"));
         holder.Rain.setText(String.valueOf(mDayForecast.get(position).getRainProbability() + "%"));
+
     }
+
+    private String week(int week){
+        String s_week = "";
+        switch (week){
+            case 1:s_week += "Sun ";break;
+            case 2:s_week += "Mon ";break;
+            case 3:s_week += "Tue ";break;
+            case 4:s_week += "Wed ";break;
+            case 5:s_week += "Thu ";break;
+            case 6:s_week += "Fri ";break;
+            case 7:s_week += "Sat ";break;
+        }
+        return s_week;
+    }
+
 
     @Override
     public int getItemCount() {

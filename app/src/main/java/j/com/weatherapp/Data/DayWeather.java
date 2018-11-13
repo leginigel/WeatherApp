@@ -13,6 +13,7 @@ public class DayWeather {
     double MinRealFeelTemperature;
     Integer RainProbability;
     Integer Icon;
+    String IconPhrase;
 
     public JSONObject getJsonWeather() {
         return JsonWeather;
@@ -32,6 +33,7 @@ public class DayWeather {
                     jsonWeather.getJSONObject("Temperature").getJSONObject("Minimum").getDouble("Value"));
             setRainProbability(jsonWeather.getJSONObject("Day").getInt("RainProbability"));
             setIcon(jsonWeather.getJSONObject("Day").getInt("Icon"));
+            setIconPhrase(jsonWeather.getJSONObject("Day").getString("IconPhrase"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -91,6 +93,14 @@ public class DayWeather {
 
     public void setIcon(Integer icon) {
         Icon = icon;
+    }
+
+    public String getIconPhrase() {
+        return IconPhrase;
+    }
+
+    public void setIconPhrase(String iconPhrase) {
+        IconPhrase = iconPhrase;
     }
 
     @Override

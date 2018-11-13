@@ -26,6 +26,10 @@ public class CityWeather {
     Integer curRelativeHumidity;
     Integer curPressure;
 
+    double curWindSpeed;
+    String curWindDirection;
+    String curUVIndexText;
+
     List <DayWeather> dayForecast;
 
     public CityWeather() {
@@ -123,6 +127,30 @@ public class CityWeather {
 
     public void setCurPressure(Integer curPressure) {
         this.curPressure = curPressure;
+    }
+
+    public double getCurWindSpeed() {
+        return curWindSpeed;
+    }
+
+    public void setCurWindSpeed(double curWindSpeed) {
+        this.curWindSpeed = curWindSpeed;
+    }
+
+    public String getCurWindDirection() {
+        return curWindDirection;
+    }
+
+    public void setCurWindDirection(String curWindDirection) {
+        this.curWindDirection = curWindDirection;
+    }
+
+    public String getCurUVIndexText() {
+        return curUVIndexText;
+    }
+
+    public void setCurUVIndexText(String curUVIndexText) {
+        this.curUVIndexText = curUVIndexText;
     }
 
     public static final class CityWeatherEntry implements BaseColumns {
