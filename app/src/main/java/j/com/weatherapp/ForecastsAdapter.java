@@ -85,7 +85,7 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
 
     }
 
-    private String week(int week){
+    public static String week(int week){
         String s_week = "";
         switch (week){
             case 1:s_week += "Sun ";break;

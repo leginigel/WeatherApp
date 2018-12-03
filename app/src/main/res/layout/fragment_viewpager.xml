@@ -11,47 +11,67 @@
         android:fitsSystemWindows="false">
 
         <android.support.v7.widget.CardView
-            android:id="@+id/topcardview"
+            android:id="@+id/top_card_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@android:color/transparent"
             app:cardCornerRadius="2dp"
             app:cardElevation="0dp">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/top_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/city"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="CITY"
+                        android:textSize="36sp" />
+
+                    <TextView
+                        android:id="@+id/temperature"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="100C"
+                        android:textAlignment="textEnd"
+                        android:textSize="36sp" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/city"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/observe_time"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="CITY"
-                    android:textSize="36sp" />
+                    android:layout_below="@+id/top_bar"
+                    android:layout_alignStart="@id/top_bar"
+                    android:text="0000-00-00-00"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Tooltip"
+                    android:textStyle="italic"
+                    android:alpha="0.5"/>
 
-                <TextView
-                    android:id="@+id/temperature"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="100C"
-                    android:textAlignment="textEnd"
-                    android:textSize="36sp" />
-            </LinearLayout>
+            </RelativeLayout>
 
         </android.support.v7.widget.CardView>
 
     </FrameLayout>
+
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="j.com.weatherapp.CustomBehavior">
+
     <j.com.weatherapp.CustomNestedScrollView2
         android:id='@+id/nestedscrollview'
         android:layout_width="match_parent"

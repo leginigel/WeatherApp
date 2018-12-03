@@ -1,5 +1,6 @@
 package j.com.weatherapp;
 
+import android.animation.Animator;
 import android.content.ContentResolver;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -14,7 +15,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
@@ -27,9 +30,15 @@ import com.android.volley.VolleyError;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import j.com.weatherapp.Data.CityWeather;
 import j.com.weatherapp.Data.VolleyWeather;
 
+import static j.com.weatherapp.MainActivity.bottomNavigationView;
 import static j.com.weatherapp.MainActivity.url;
 
 public class PageFragment extends Fragment {
@@ -72,7 +81,8 @@ public class PageFragment extends Fragment {
         mVolleyWeather = new VolleyWeather(getActivity(), mCityWeather);
     }
 
-    TextView city, temperature, temperature_range, realfeel, weathertext, pressure, humidity, uv_index;
+    TextView city, temperature, temperature_range, real_feel, weather_text, pressure, humidity
+            , uv_index, observer_time;
     ForecastsAdapter rvAdapter;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -131,6 +141,37 @@ public class PageFragment extends Fragment {
                     mVolleyWeather.fetchCurrentCondition(mCityWeather.getLocationKey(), listener, false);
             }
         });
+
+        nsv.setOnTouchListener(
+                new NestedScrollView.OnTouchListener() {
+                    private long startClickTime;
+                    @Override
+                    public boolean onTouch(View view, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            startClickTime = System.currentTimeMillis();
+//                                           Log.d("Frag", "OnTouchd");
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+
+                            if (System.currentTimeMillis() - startClickTime < ViewConfiguration.getTapTimeout()) {
+                                // Touch was a simple tap. Do whatever.
+                                if (bottomNavigationView.getVisibility() == View.GONE) {
+                                    MainActivity.bottomNavigationView.animate().alpha(1).setDuration(500).start();
+                                    MainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+                                }
+                                else {
+                                    MainActivity.bottomNavigationView.setAlpha(0);
+                                    MainActivity.bottomNavigationView.setVisibility(View.GONE);
+                                }
+//                                               Log.d("Frag", "OnTouchu");
+                            } else {
+                                // Touch was a not a simple tap.
+//                                               Log.d("Frag", "OnTouche");
+                            }
+                        }
+                        return true;
+                    }
+                }
+        );
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
@@ -141,11 +182,12 @@ public class PageFragment extends Fragment {
         city = view.findViewById(R.id.city);
         temperature = view.findViewById(R.id.temperature);
         temperature_range = view.findViewById(R.id.temperature_range);
-        realfeel = view.findViewById(R.id.realfeel);
-        weathertext = view.findViewById(R.id.weathertext);
+        real_feel = view.findViewById(R.id.realfeel);
+        weather_text = view.findViewById(R.id.weathertext);
         pressure = view.findViewById(R.id.pressure);
         humidity = view.findViewById(R.id.humidity);
         uv_index = view.findViewById(R.id.uv);
+        observer_time = view.findViewById(R.id.observe_time);
 
         city.setText(mCity);
 
@@ -166,11 +208,25 @@ public class PageFragment extends Fragment {
 
         temperature.setText(String.valueOf((int)mCityWeather.getCurTemperature() + "°C"));
         temperature_range.setText(MaxMin);
-        realfeel.setText(String.valueOf((int)mCityWeather.getCurRealFeelTemperature() + "°C"));
-        weathertext.setText(mCityWeather.getCurWeatherText());
+        real_feel.setText(String.valueOf((int)mCityWeather.getCurRealFeelTemperature() + "°C"));
+        weather_text.setText(mCityWeather.getCurWeatherText());
         pressure.setText(String.valueOf(mCityWeather.getCurPressure() + " hpa"));
         humidity.setText(String.valueOf(mCityWeather.getCurRelativeHumidity() + "%"));
         uv_index.setText(mCityWeather.getCurUVIndexText());
+
+        Calendar c = Calendar.getInstance();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        DateFormat toFormat = new SimpleDateFormat("MM/dd HH:mm 'updated.'");
+        String sDate = null;
+        try {
+            sDate = toFormat.format(df.parse(mCityWeather.getCurLocalObservationDateTime()));
+            c.setTime(df.parse(mCityWeather.getCurLocalObservationDateTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String wDate = ForecastsAdapter.week(c.get(Calendar.DAY_OF_WEEK)) + sDate;
+
+        observer_time.setText(wDate);
 
         rvAdapter.notifyDataSetChanged();
         swipeContainer.setRefreshing(false);
