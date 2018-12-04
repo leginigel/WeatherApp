@@ -41,7 +41,7 @@ public class VolleyWeather {
 
     public void fetchLocationKey(final String city, final PageFragment.VolleyResponseListener listener) {
         this.City = city;
-        Log.d(Tag, City + "fetch location key");
+        Log.d(Tag, City + " fetch location key");
         String url = Host + "/locations/v1/search" + apiKey + language  + "&q=" + city;
 
         JsonArrayRequest req = new JsonArrayRequest(
@@ -67,7 +67,7 @@ public class VolleyWeather {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.i(Tag, City + "Error fetch location key");
+                        Log.i(Tag, City + " Error fetch location key");
                         VolleyLog.e("Error: ", error.getMessage());
                         error.printStackTrace();
                     }
@@ -88,7 +88,7 @@ public class VolleyWeather {
 
     public void fetchCurrentCondition
             (final String key, final PageFragment.VolleyResponseListener listener, final boolean exist) {
-        Log.i(Tag, City + "fetch current condition");
+        Log.i(Tag, City + " fetch current condition");
         String url = Host + "/currentconditions/v1/" + key + apiKey + detail + language;
 
         JsonArrayRequest req = new JsonArrayRequest(
@@ -144,14 +144,14 @@ public class VolleyWeather {
                                 String select =
                                         "("+ CityWeather.CityWeatherEntry.COLUMN_LOCATION_KEY +"='"+ key +"')";
                                 try {
-                                    Log.i(Tag, City + "Update current condition");
+                                    Log.i(Tag, City + " Update current condition");
                                     resolver.update(uri, values, select, null);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             } else {
                                 try {
-                                    Log.i(Tag, City + "Insert current condition");
+                                    Log.i(Tag, City + " Insert current condition");
                                     resolver.insert(uri, values);
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -168,7 +168,7 @@ public class VolleyWeather {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.i(Tag, City + "Error fetch current condition");
+                        Log.i(Tag, City + " Error fetch current condition");
                         VolleyLog.e("Error: ", error.getMessage());
                         error.printStackTrace();
                         listener.onError(error);
@@ -180,7 +180,7 @@ public class VolleyWeather {
     }
 
     public void fetchFiveForecasts(final PageFragment.VolleyResponseListener listener) {
-        Log.i(Tag, City + "fetch Five Forecasts");
+        Log.i(Tag, City + " fetch Five Forecasts");
         String url = Host + "/forecasts/v1/daily/5day/" + mCityWeather.getLocationKey() + apiKey
                 + detail + metric + language;
 
@@ -196,7 +196,7 @@ public class VolleyWeather {
                             mCityWeather.getDayForecast().clear();
                             mCityWeather.setFiveForecasts(FiveForecasts);
                             dataFiveForecastsCityUpdateDB(FiveForecasts.toString());
-                            Log.i(Tag, City + "Success fetch Five Forecasts");
+                            Log.i(Tag, City + " Success fetch Five Forecasts");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } finally {
@@ -207,7 +207,7 @@ public class VolleyWeather {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.i(Tag, City + "Error fetch Five Forecasts");
+                        Log.i(Tag, City + " Error fetch Five Forecasts");
                         VolleyLog.e("Error: ", error.getMessage());
                         error.printStackTrace();
                         listener.onError(error);

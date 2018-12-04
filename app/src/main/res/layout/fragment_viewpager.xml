@@ -70,9 +70,9 @@
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="j.com.weatherapp.CustomBehavior">
+        app:layout_behavior="j.com.weatherapp.Weather.CustomBehavior">
 
-    <j.com.weatherapp.CustomNestedScrollView2
+    <j.com.weatherapp.Weather.CustomNestedScrollView2
         android:id='@+id/nestedscrollview'
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -241,7 +241,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <j.com.weatherapp.MaxHeightRecyclerView
+                        <j.com.weatherapp.Weather.MaxHeightRecyclerView
                             android:id="@+id/card_recyclerview"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
@@ -270,7 +270,7 @@
 
         </FrameLayout>
 
-    </j.com.weatherapp.CustomNestedScrollView2>
+    </j.com.weatherapp.Weather.CustomNestedScrollView2>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

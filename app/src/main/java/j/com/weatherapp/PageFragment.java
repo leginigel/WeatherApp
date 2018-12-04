@@ -1,6 +1,5 @@
 package j.com.weatherapp;
 
-import android.animation.Animator;
 import android.content.ContentResolver;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -37,6 +36,7 @@ import java.util.Calendar;
 
 import j.com.weatherapp.Data.CityWeather;
 import j.com.weatherapp.Data.VolleyWeather;
+import j.com.weatherapp.Weather.ForecastsAdapter;
 
 import static j.com.weatherapp.MainActivity.bottomNavigationView;
 import static j.com.weatherapp.MainActivity.url;
@@ -244,7 +244,8 @@ public class PageFragment extends Fragment {
 
                     setTodayCard();
                 }
-                Log.i(mCity + "onError","City Weather get LocationKey null");
+                else
+                    Log.i(mCity + "onError","City Weather get LocationKey null");
             }
 
             @Override
@@ -260,7 +261,8 @@ public class PageFragment extends Fragment {
                     if (swipeContainer.isRefreshing())
                         Toast.makeText(getActivity(), "Update Success", Toast.LENGTH_LONG).show();
                 }
-                Log.i(mCity + "onError","City Weather get LocationKey null");
+                else
+                    Log.i(mCity + "onError","City Weather get LocationKey null");
             }
         };
     }

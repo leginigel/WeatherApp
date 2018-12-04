@@ -1,4 +1,4 @@
-package j.com.weatherapp;
+package j.com.weatherapp.Weather;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

@@ -1,15 +1,17 @@
-package j.com.weatherapp;
+package j.com.weatherapp.Weather;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
+
+import j.com.weatherapp.MainActivity;
+import j.com.weatherapp.R;
 
 import static android.support.design.widget.CoordinatorLayout.Behavior;
 

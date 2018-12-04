@@ -5,11 +5,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
 
 public class WeatherFragmentPageAdapter extends FragmentPagerAdapter {
 
     final int PAGE_COUNT = 2;
-    private String tabTitles[] = new String[] {"Taipei", "London", "Tab3"};
+
     private Context context;
 
     public WeatherFragmentPageAdapter(FragmentManager fm, Context context) {
@@ -19,11 +20,12 @@ public class WeatherFragmentPageAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int i) {
-        return PageFragment.newInstance(i + 1, tabTitles[i]);
+                return PageFragment.newInstance(i + 1, MainActivity.cityList.get(i));
     }
 
     @Override
     public int getCount() {
-        return PAGE_COUNT;
+        return MainActivity.cityList.size();
     }
+
 }

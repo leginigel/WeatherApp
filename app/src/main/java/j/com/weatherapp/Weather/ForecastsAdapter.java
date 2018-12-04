@@ -1,14 +1,8 @@
-package j.com.weatherapp;
+package j.com.weatherapp.Weather;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +15,11 @@ import com.bumptech.glide.request.RequestOptions;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import j.com.weatherapp.Data.DayWeather;
+import j.com.weatherapp.R;
 
 public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.ViewHolder>{
 
@@ -98,7 +91,6 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
         }
         return s_week;
     }
-
 
     @Override
     public int getItemCount() {
