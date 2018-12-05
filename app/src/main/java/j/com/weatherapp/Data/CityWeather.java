@@ -13,6 +13,7 @@ import java.util.List;
 
 public class CityWeather {
 
+    String cityName;
     String locationKey;
 
     JSONObject currentCon;
@@ -55,6 +56,14 @@ public class CityWeather {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 
     public void setLocationKey(String locationKey) {

@@ -44,6 +44,7 @@ public class CityFragment extends Fragment {
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         CityListAdapter cityListAdapter = new CityListAdapter(getActivity(), MainActivity.cityList);
         rv.setLayoutManager(lm);
+
         rv.setAdapter(cityListAdapter);
         // Inflate the layout for this fragment
         return view;

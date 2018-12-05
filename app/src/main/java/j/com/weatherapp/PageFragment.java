@@ -206,6 +206,12 @@ public class PageFragment extends Fragment {
                     + "° C";
         }
 
+        SharedPreferences Temperature;
+        Temperature = getActivity().getSharedPreferences("Temperature", 0);
+        SharedPreferences.Editor editor = Temperature.edit();
+        editor.putString(mCity, String.valueOf((int)mCityWeather.getCurTemperature()));
+        editor.apply();
+
         temperature.setText(String.valueOf((int)mCityWeather.getCurTemperature() + "°C"));
         temperature_range.setText(MaxMin);
         real_feel.setText(String.valueOf((int)mCityWeather.getCurRealFeelTemperature() + "°C"));

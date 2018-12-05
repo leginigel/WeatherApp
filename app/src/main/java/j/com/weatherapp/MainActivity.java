@@ -20,13 +20,14 @@ import com.android.volley.toolbox.Volley;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private static String Tag = MainActivity.class.getSimpleName();
     public static RequestQueue mRequestQueue;
     public static String url ="content://com.j.provider.Data.WeatherProvider/city";
     public static BottomNavigationView bottomNavigationView;
     public static ArrayList<String> cityList = new ArrayList<>();
+    public static ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,44 +38,57 @@ public class MainActivity extends AppCompatActivity {
         cityList.add("London");
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigationView);
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
         WeatherFragmentPageAdapter WFPA =
                 new WeatherFragmentPageAdapter(getSupportFragmentManager(), MainActivity.this);
+
         CityFragment cityFragment = new CityFragment();
+        SettingFragment settingFragment = new SettingFragment();
+        SearchFragment searchFragment = new SearchFragment();
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()){
                     case R.id.navigation_setting:
+//                        viewPager.setVisibility(View.GONE);
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.frame_fragmentholder, settingFragment, "t")
+                                .commit();
                         return true;
                     case R.id.navigation_list:
-                        viewPager.setVisibility(View.GONE);
+//                        viewPager.setVisibility(View.GONE);
                         getSupportFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.frame_fragmentholder, cityFragment, "t")
                                 .commit();
                         return true;
                     case R.id.navigation_search:
+//                        viewPager.setVisibility(View.GONE);
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.frame_fragmentholder, settingFragment, "t")
+                                .commit();
                         return true;
                     case R.id.navigation_weather:
-                        viewPager.setVisibility(View.VISIBLE);
+//                        viewPager.setVisibility(View.VISIBLE);
 //                        for (Fragment fragment:getSupportFragmentManager().getFragments()) {
 //                            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 //                        }
                         Fragment fragment = getSupportFragmentManager().findFragmentByTag("t");
                         if(fragment != null)
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .remove(fragment)
-                                .commit();
+                            getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .remove(fragment)
+                                    .commit();
                         return true;
                 }
                 return false;
             }
         });
-        viewPager.setAdapter(WFPA);
 
+        viewPager.setAdapter(WFPA);
         mRequestQueue = Volley.newRequestQueue(this);
     }
 
@@ -85,6 +99,5 @@ public class MainActivity extends AppCompatActivity {
             mRequestQueue.cancelAll("GG");
         }
     }
-
 
 }
