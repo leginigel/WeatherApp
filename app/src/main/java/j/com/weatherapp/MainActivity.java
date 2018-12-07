@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity{
     public static BottomNavigationView bottomNavigationView;
     public static ArrayList<String> cityList = new ArrayList<>();
     public static ViewPager viewPager;
+    public static WeatherFragmentPageAdapter WFPA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity{
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigationView);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        WeatherFragmentPageAdapter WFPA =
+        WFPA =
                 new WeatherFragmentPageAdapter(getSupportFragmentManager(), MainActivity.this);
 
         CityFragment cityFragment = new CityFragment();
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity{
 //                        viewPager.setVisibility(View.GONE);
                         getSupportFragmentManager()
                                 .beginTransaction()
-                                .replace(R.id.frame_fragmentholder, settingFragment, "t")
+                                .replace(R.id.frame_fragmentholder, searchFragment, "t")
                                 .commit();
                         return true;
                     case R.id.navigation_weather:

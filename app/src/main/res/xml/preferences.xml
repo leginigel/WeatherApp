@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Update"
+        android:key="update_cate" >
+
+        <android.support.v7.preference.CheckBoxPreference
+            android:key="update_open"
+            android:summary="Update weather data when open App every time"
+            android:title="Open Then Update"
+            android:defaultValue="false" />
+
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:key="update_auto"
+            android:title="Auto Update"
+            android:summary="Auto update the data of weather"
+            android:defaultValue="false" />
+
+
+        <android.support.v7.preference.ListPreference
+            android:dependency="update_auto"
+            android:dialogTitle="Update Duration"
+            android:key="auto_update_value"
+            android:entries="@array/time_value"
+            android:entryValues="@array/time_key"
+            android:summary="Every 1 hour"
+            android:defaultValue="settings_update_time_24"
+            android:title="Update Duration" />
+
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.ListPreference
+        android:title="Metric Converter"
+        android:dialogTitle="Metric"
+        android:entries="@array/temp_unit_value"
+        android:entryValues="@array/temp_unit_key"
+        android:key="metric"
+        android:summary="@string/settings_temperature_unit_auto"
+        android:defaultValue="@string/settings_temperature_unit_auto" />
+
+</PreferenceScreen>

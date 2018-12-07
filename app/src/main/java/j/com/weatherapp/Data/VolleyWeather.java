@@ -171,7 +171,11 @@ public class VolleyWeather {
                         Log.i(Tag, City + " Error fetch current condition");
                         VolleyLog.e("Error: ", error.getMessage());
                         error.printStackTrace();
-                        listener.onError(error);
+                        if (exist)
+                            listener.onError(error);
+                        else
+                            Toast.makeText(mContext, "Data Error", Toast.LENGTH_SHORT).show();
+
                     }
                 }
         );

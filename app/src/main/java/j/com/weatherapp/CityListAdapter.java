@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -63,11 +64,23 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
         CardView CityCard;
         TextView CityName;
         TextView CityTemp;
+        RelativeLayout BackGround;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             CityCard = itemView.findViewById(R.id.city_card);
             CityName = itemView.findViewById(R.id.city_name);
             CityTemp = itemView.findViewById(R.id.city_temperature);
+            BackGround =itemView.findViewById(R.id.view_background);
         }
+    }
+
+    public void removeItem(int pos){
+        mCityList.remove(pos);
+        notifyItemRemoved(pos);
+    }
+
+    public void restoreCity(String city, int pos){
+        mCityList.add(pos, city);
+        notifyItemInserted(pos);
     }
 }

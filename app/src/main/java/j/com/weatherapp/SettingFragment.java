@@ -1,21 +1,28 @@
 package j.com.weatherapp;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.Preference;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.ListPreference;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link PreferenceFragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link SettingFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class SettingFragment extends Fragment {
+public class SettingFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener{
 
     private OnFragmentInteractionListener mListener;
 
@@ -23,12 +30,30 @@ public class SettingFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreatePreferences(Bundle bundle, String s) {
+
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_setting, container, false);
+    public void onCreatePreferencesFix(Bundle savedInstanceState, String rootKey) {
+        setPreferencesFromResource(R.xml.preferences, rootKey);
+        Preference listPreference = findPreference("auto_update_value");
+//        listPreference.setVisible(false);
+        //if you are using default SharedPreferences
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+//        onPreferenceChange(sharedPrefs, "auto_update_value");
+    }
+
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        view.setBackgroundColor(Color.WHITE);
+
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -53,6 +78,25 @@ public class SettingFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object o) {
+        ListPreference lp = (ListPreference)findPreference(preference.getKey());
+        CharSequence[] entries = lp.getEntries();
+        lp.setSummary(entries[lp.findIndexOfValue((String) o)]);
+        return true;
+    }
+
+    @Override
+    public boolean onPreferenceTreeClick( Preference preference) {
+
+        if("auto_update_value".equals(preference.getKey())||"metric".equals(preference.getKey()))
+        {
+            ListPreference lpp = (ListPreference)findPreference(preference.getKey());
+            lpp.setOnPreferenceChangeListener(this);
+        }
+        return super.onPreferenceTreeClick( preference);
     }
 
     /**
