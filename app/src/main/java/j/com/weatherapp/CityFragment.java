@@ -1,8 +1,11 @@
 package j.com.weatherapp;
 
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +14,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,35 +33,53 @@ import java.util.List;
 public class CityFragment extends Fragment
         implements CityRecyclerItemTouch.RecyclerItemTouchHelperListener{
 
-    RecyclerView rv;
-    CityListAdapter cityListAdapter;
-    List<String> cityList;
-    FrameLayout frameLayout;
+    private RecyclerView rv;
+    private CityListAdapter cityListAdapter;
+    private List<String> cityList;
+    private FrameLayout frameLayout;
+    private SharedViewModel model;
+
     public CityFragment() {
         // Required empty public constructor
-//        MainActivity.bottomNavigationView.setVisibility(View.GONE);
+    }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        cityList = getArguments().getStringArrayList("CityList");
+        cityListAdapter = new CityListAdapter(getActivity(), cityList);
+
+        model = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        model.getCityList().observe(getActivity(), city ->{
+            cityList = city;
+            cityListAdapter.notifyDataSetChanged();
+        });
+        model.getSelected().observe(getActivity(), (pos)-> {
+            cityListAdapter.setCityPage(pos); });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_city, container, false);
-        view.setBackgroundColor(Color.WHITE);
 
         // Set a Toolbar to replace the ActionBar.
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar_city);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
-        TextView text_toolbar = toolbar.findViewById(R.id.toolbar_title);
-        text_toolbar.setText("City List");
 
         frameLayout = view.findViewById(R.id.framelayout_city);
-        cityList = MainActivity.cityList;
+
         rv = view.findViewById(R.id.city_list);
         LinearLayoutManager lm =
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        cityListAdapter = new CityListAdapter(getActivity(), MainActivity.cityList);
         rv.setLayoutManager(lm);
         rv.setItemAnimator(new DefaultItemAnimator());
         rv.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
@@ -70,10 +92,8 @@ public class CityFragment extends Fragment
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new CityRecyclerItemTouch(0, ItemTouchHelper.LEFT, this);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rv);
 
-
         return view;
     }
-
 
     /**
      * callback when recycler view is swiped
@@ -92,7 +112,7 @@ public class CityFragment extends Fragment
 
             // remove the item from recycler view
             cityListAdapter.removeItem(viewHolder.getAdapterPosition());
-            MainActivity.viewPager.setAdapter(MainActivity.WFPA);
+//            MainActivity.viewPager.setAdapter(MainActivity.WFPA);
             // showing snack bar with Undo option
             Snackbar snackbar = Snackbar
                     .make(frameLayout, name + " removed from cart!", Snackbar.LENGTH_LONG);
@@ -107,5 +127,53 @@ public class CityFragment extends Fragment
             snackbar.setActionTextColor(Color.YELLOW);
             snackbar.show();
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.v("city", "stop");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.v("city", "destroy");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.v("city", "detach");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.v("city", "start");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.v("city", "destoryview");
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.v("city", "attach");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.v("city", "pause");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.v("city", "resume");
     }
 }

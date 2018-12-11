@@ -3,6 +3,7 @@ package j.com.weatherapp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,7 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
 
     private List<String> mCityList;
     private Context mContext;
+    private int mCityPage;
 
     public CityListAdapter(Context context, List<String> list) {
         this.mCityList = list;
@@ -53,6 +55,7 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
         });
         viewHolder.CityTemp.setText(Temperature.getString(mCityList.get(i), null));
         viewHolder.CityName.setText(mCityList.get(i));
+        if (mCityPage == i) viewHolder.CityCard.setBackgroundColor(Color.GRAY);
     }
 
     @Override
@@ -72,6 +75,10 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
             CityTemp = itemView.findViewById(R.id.city_temperature);
             BackGround =itemView.findViewById(R.id.view_background);
         }
+    }
+
+    public void setCityPage(int page){
+        mCityPage = page;
     }
 
     public void removeItem(int pos){

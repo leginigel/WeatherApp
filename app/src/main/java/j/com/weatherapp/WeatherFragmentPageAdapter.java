@@ -7,6 +7,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 
+import java.util.List;
+
 public class WeatherFragmentPageAdapter extends FragmentPagerAdapter {
 
     final int PAGE_COUNT = 2;
@@ -20,7 +22,7 @@ public class WeatherFragmentPageAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int i) {
-                return PageFragment.newInstance(i + 1, MainActivity.cityList.get(i));
+                return PageFragment.newInstance(i, MainActivity.cityList.get(i));
     }
 
     @Override
