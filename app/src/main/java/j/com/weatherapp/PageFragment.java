@@ -136,9 +136,9 @@ public class PageFragment extends Fragment {
             @Override
             public void onRefresh() {
                 if (mKey != null)
-                    mVolleyWeather.fetchCurrentCondition(mCityWeather.getLocationKey(), listener, true);
+                    mVolleyWeather.fetchCurrentCondition(mCityWeather.getCityKey(), listener, true);
                 else
-                    mVolleyWeather.fetchCurrentCondition(mCityWeather.getLocationKey(), listener, false);
+                    mVolleyWeather.fetchCurrentCondition(mCityWeather.getCityKey(), listener, false);
             }
         });
 
@@ -246,7 +246,7 @@ public class PageFragment extends Fragment {
                 if (message instanceof TimeoutError || message instanceof NoConnectionError)
                     Toast.makeText(getActivity(), "Network Error", Toast.LENGTH_LONG).show();
 
-                if (mCityWeather.getLocationKey() != null) {
+                if (mCityWeather.getCityKey() != null) {
 
                     setTodayCard();
                 }
@@ -257,9 +257,9 @@ public class PageFragment extends Fragment {
             @Override
             public void onResponse(Object response) {
 
-                if (mCityWeather.getLocationKey() != null) {
+                if (mCityWeather.getCityKey() != null) {
                     SharedPreferences.Editor editor = mSetting.edit();
-                    editor.putString(mCity, mCityWeather.getLocationKey());
+                    editor.putString(mCity, mCityWeather.getCityKey());
                     editor.apply();
 
                     setTodayCard();
@@ -299,7 +299,7 @@ public class PageFragment extends Fragment {
                         Log.d(mCity + "Cursor", cursor.getString(0) + "  " + cursor.getString(1));
                         Log.i(mCity + "Cursor", "move to first");
 
-                        mCityWeather.setLocationKey(cursor.getString(0));
+                        mCityWeather.setCityKey(cursor.getString(0));
                         mCityWeather.setCurLocalObservationDateTime(cursor.getString(1));
                         mCityWeather.setCurIsDayTime(Boolean.valueOf(cursor.getString(2)));
                         mCityWeather.setCurTemperature(cursor.getDouble(3));
@@ -329,7 +329,7 @@ public class PageFragment extends Fragment {
             }
         }
         else{
-            mVolleyWeather.fetchLocationKey(mCity, listener);
+            mVolleyWeather.fetchLocation(mCity, listener, false);
         }
     }
 

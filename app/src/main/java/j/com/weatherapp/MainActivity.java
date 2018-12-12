@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity{
     public static WeatherFragmentPageAdapter WFPA;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -14,8 +14,12 @@ import java.util.List;
 public class CityWeather {
 
     String cityName;
-    String locationKey;
+    String cityKey;
+    String cityRegion;
+    String cityCountry;
+    String cityArea;
 
+    JSONArray location;
     JSONObject currentCon;
     JSONArray fiveForecasts;
 
@@ -37,8 +41,37 @@ public class CityWeather {
         dayForecast = new ArrayList<>();
     }
 
-    public List<DayWeather> getDayForecast() {
-        return dayForecast;
+    public JSONArray getLocation() {
+        return location;
+    }
+
+    public void setLocation(JSONArray location) {
+        this.location = location;
+        for (int i = 0; i <= location.length(); i++) {
+            try {
+                String key = location.getJSONObject(i).getString("Key");
+                String name = location.getJSONObject(i).getString("LocalizedName");
+                String region = location.getJSONObject(i).getJSONObject("Region").getString("LocalizedName");
+                String country = location.getJSONObject(i).getJSONObject("Country").getString("LocalizedName");
+                String area = location.getJSONObject(i).getJSONObject("AdministrativeArea").getString("LocalizedName");
+
+                setCityKey(key);
+                setCityName(name);
+                setCityRegion(region);
+                setCityCountry(country);
+                setCityArea(area);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public JSONObject getCurrentCon() {
+        return currentCon;
+    }
+
+    public void setCurrentCon(JSONObject currentCon) {
+        this.currentCon = currentCon;
     }
 
     public JSONArray getFiveForecasts() {
@@ -58,6 +91,10 @@ public class CityWeather {
         }
     }
 
+    public List<DayWeather> getDayForecast() {
+        return dayForecast;
+    }
+
     public String getCityName() {
         return cityName;
     }
@@ -66,20 +103,36 @@ public class CityWeather {
         this.cityName = cityName;
     }
 
-    public void setLocationKey(String locationKey) {
-        this.locationKey = locationKey;
+    public void setCityKey(String cityKey) {
+        this.cityKey = cityKey;
     }
 
-    public void setCurrentCon(JSONObject currentCon) {
-        this.currentCon = currentCon;
+    public String getCityKey() {
+        return cityKey;
     }
 
-    public String getLocationKey() {
-        return locationKey;
+    public String getCityRegion() {
+        return cityRegion;
     }
 
-    public JSONObject getCurrentCon() {
-        return currentCon;
+    public void setCityRegion(String cityRegion) {
+        this.cityRegion = cityRegion;
+    }
+
+    public String getCityCountry() {
+        return cityCountry;
+    }
+
+    public void setCityCountry(String cityCountry) {
+        this.cityCountry = cityCountry;
+    }
+
+    public String getCityArea() {
+        return cityArea;
+    }
+
+    public void setCityArea(String cityArea) {
+        this.cityArea = cityArea;
     }
 
     public String getCurLocalObservationDateTime() {

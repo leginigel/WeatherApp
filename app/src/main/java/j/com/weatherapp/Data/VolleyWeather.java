@@ -21,16 +21,14 @@ import org.json.JSONObject;
 import j.com.weatherapp.MainActivity;
 import j.com.weatherapp.PageFragment;
 
-import static com.android.volley.Request.Method.GET;
-
 public class VolleyWeather {
     private static final String Host = "http://dataservice.accuweather.com";
     private static final String apiKey = "?apikey=uHtD8X8XUwOpXPKbFDMijg7KttBv5GfN";
-    private static String Tag = VolleyWeather.class.getSimpleName();
+    private String Tag = VolleyWeather.class.getSimpleName();
     private String City;
     CityWeather mCityWeather;
     private Context mContext;
-    private String language = "&language=en-us";
+    private static String language = "&language=en-us";
     private String detail = "&details=true";
     private String metric = "&metric=true";
 
@@ -39,9 +37,9 @@ public class VolleyWeather {
         this.mCityWeather = mCityWeather;
     }
 
-    public void fetchLocationKey(final String city, final PageFragment.VolleyResponseListener listener) {
+    public void fetchLocation(final String city, final PageFragment.VolleyResponseListener listener, final boolean fromSearch) {
         this.City = city;
-        Log.d(Tag, City + " fetch location key");
+        Log.d(Tag, City + " fetch location");
         String url = Host + "/locations/v1/search" + apiKey + language  + "&q=" + city;
 
         JsonArrayRequest req = new JsonArrayRequest(
@@ -52,15 +50,20 @@ public class VolleyWeather {
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
-                            String result =
-                                    City + "City key is " + response.getJSONObject(0).getString("Key");
-                            Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
+//                            String result =
+//                                    City + "City key is " + response.getJSONObject(0).getString("Key");
+//                            Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
                             String key = response.getJSONObject(0).getString("Key");
-                            mCityWeather.setLocationKey(key);
+
+                            mCityWeather.setLocation(response);
+//                            mCityWeather.setCityKey(key);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } finally {
-                            fetchCurrentCondition(mCityWeather.getLocationKey(), listener, false);
+                            if (!fromSearch)
+                                fetchCurrentCondition(mCityWeather.getCityKey(), listener, false);
+                            else
+                                listener.onResponse(response);
                         }
                     }
                 },
@@ -185,7 +188,7 @@ public class VolleyWeather {
 
     public void fetchFiveForecasts(final PageFragment.VolleyResponseListener listener) {
         Log.i(Tag, City + " fetch Five Forecasts");
-        String url = Host + "/forecasts/v1/daily/5day/" + mCityWeather.getLocationKey() + apiKey
+        String url = Host + "/forecasts/v1/daily/5day/" + mCityWeather.getCityKey() + apiKey
                 + detail + metric + language;
 
         JsonObjectRequest req = new JsonObjectRequest(
@@ -227,7 +230,7 @@ public class VolleyWeather {
 
         ContentValues values = new ContentValues();
 
-        values.put(CityWeather.CityWeatherEntry.COLUMN_LOCATION_KEY, mCityWeather.getLocationKey());
+        values.put(CityWeather.CityWeatherEntry.COLUMN_LOCATION_KEY, mCityWeather.getCityKey());
         values.put(CityWeather.CityWeatherEntry.COLUMN_LOCAL_OBSERVATION_DATE_TIME, DateTime);
         values.put(CityWeather.CityWeatherEntry.COLUMN_DAY_TIME, IsDay);
         values.put(CityWeather.CityWeatherEntry.COLUMN_TEMPERATURE, Temperature);
@@ -247,7 +250,7 @@ public class VolleyWeather {
         ContentValues values = new ContentValues();
         values.put(CityWeather.CityWeatherEntry.COLUMN_FIVE_FORECASTS, FiveForecasts);
         String select = "("+ CityWeather.CityWeatherEntry.COLUMN_LOCATION_KEY +"='"
-                                                            + mCityWeather.getLocationKey() + "')";
+                                                            + mCityWeather.getCityKey() + "')";
 
         ContentResolver resolver = mContext.getContentResolver();
         resolver.update(uri, values, select, null);
