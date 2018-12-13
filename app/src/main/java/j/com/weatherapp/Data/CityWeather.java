@@ -47,7 +47,7 @@ public class CityWeather {
 
     public void setLocation(JSONArray location) {
         this.location = location;
-        for (int i = 0; i <= location.length(); i++) {
+        for (int i = 0; i < location.length(); i++) {
             try {
                 String key = location.getJSONObject(i).getString("Key");
                 String name = location.getJSONObject(i).getString("LocalizedName");
