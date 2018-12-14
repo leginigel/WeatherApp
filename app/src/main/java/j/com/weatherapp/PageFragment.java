@@ -14,9 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
@@ -38,7 +36,7 @@ import j.com.weatherapp.Data.CityWeather;
 import j.com.weatherapp.Data.VolleyWeather;
 import j.com.weatherapp.Weather.ForecastsAdapter;
 
-import static j.com.weatherapp.MainActivity.bottomNavigationView;
+import static j.com.weatherapp.MainActivity.Scale;
 import static j.com.weatherapp.MainActivity.url;
 
 public class PageFragment extends Fragment {
@@ -83,13 +81,14 @@ public class PageFragment extends Fragment {
 
     TextView city, temperature, temperature_range, real_feel, weather_text, pressure, humidity
             , uv_index, observer_time;
-    ForecastsAdapter rvAdapter;
+    private ForecastsAdapter rvAdapter;
+    private RecyclerView rv;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_viewpager, container, false);
 
-        final RecyclerView rv = view.findViewById(R.id.card_recyclerview);
+        rv = view.findViewById(R.id.card_recyclerview);
         final View cardHeaderShadow = view.findViewById(R.id.card_header_shadow);
         final LinearLayoutManager lm = new LinearLayoutManager(getActivity());
         rvAdapter = new ForecastsAdapter(getActivity(), mCityWeather.getDayForecast());
@@ -142,36 +141,36 @@ public class PageFragment extends Fragment {
             }
         });
 
-        nsv.setOnTouchListener(
-                new NestedScrollView.OnTouchListener() {
-                    private long startClickTime;
-                    @Override
-                    public boolean onTouch(View view, MotionEvent event) {
-                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                            startClickTime = System.currentTimeMillis();
-//                                           Log.d("Frag", "OnTouchd");
-                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                            if (System.currentTimeMillis() - startClickTime < ViewConfiguration.getTapTimeout()) {
-                                // Touch was a simple tap. Do whatever.
-                                if (bottomNavigationView.getVisibility() == View.GONE) {
-                                    MainActivity.bottomNavigationView.animate().alpha(1).setDuration(500).start();
-                                    MainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
-                                }
-                                else {
-                                    MainActivity.bottomNavigationView.setAlpha(0);
-                                    MainActivity.bottomNavigationView.setVisibility(View.GONE);
-                                }
-//                                               Log.d("Frag", "OnTouchu");
-                            } else {
-                                // Touch was a not a simple tap.
-//                                               Log.d("Frag", "OnTouche");
-                            }
-                        }
-                        return true;
-                    }
-                }
-        );
+//        nsv.setOnTouchListener(
+//                new NestedScrollView.OnTouchListener() {
+//                    private long startClickTime;
+//                    @Override
+//                    public boolean onTouch(View view, MotionEvent event) {
+//                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                            startClickTime = System.currentTimeMillis();
+////                                           Log.d("Frag", "OnTouchd");
+//                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+//
+//                            if (System.currentTimeMillis() - startClickTime < ViewConfiguration.getTapTimeout()) {
+//                                // Touch was a simple tap. Do whatever.
+//                                if (bottomNavigationView.getVisibility() == View.GONE) {
+//                                    MainActivity.bottomNavigationView.animate().alpha(1).setDuration(500).start();
+//                                    MainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+//                                }
+//                                else {
+//                                    MainActivity.bottomNavigationView.setAlpha(0);
+//                                    MainActivity.bottomNavigationView.setVisibility(View.GONE);
+//                                }
+////                                               Log.d("Frag", "OnTouchu");
+//                            } else {
+//                                // Touch was a not a simple tap.
+////                                               Log.d("Frag", "OnTouche");
+//                            }
+//                        }
+//                        return true;
+//                    }
+//                }
+//        );
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
@@ -199,26 +198,18 @@ public class PageFragment extends Fragment {
     }
 
     private void setTodayCard() {
+
         String MaxMin = null;
         if (!mCityWeather.getDayForecast().isEmpty()) {
             MaxMin = String.valueOf((int)mCityWeather.getDayForecast().get(0).getMaxTemperature())
                     + "° / " + String.valueOf((int)mCityWeather.getDayForecast().get(0).getMinTemperature())
-                    + "° C";
+                    + Scale(getActivity());
         }
 
-        SharedPreferences Temperature;
-        Temperature = getActivity().getSharedPreferences("Temperature", 0);
+        SharedPreferences Temperature = getActivity().getSharedPreferences("Temperature", 0);
         SharedPreferences.Editor editor = Temperature.edit();
         editor.putString(mCity, String.valueOf((int)mCityWeather.getCurTemperature()));
         editor.apply();
-
-        temperature.setText(String.valueOf((int)mCityWeather.getCurTemperature() + "°C"));
-        temperature_range.setText(MaxMin);
-        real_feel.setText(String.valueOf((int)mCityWeather.getCurRealFeelTemperature() + "°C"));
-        weather_text.setText(mCityWeather.getCurWeatherText());
-        pressure.setText(String.valueOf(mCityWeather.getCurPressure() + " hpa"));
-        humidity.setText(String.valueOf(mCityWeather.getCurRelativeHumidity() + "%"));
-        uv_index.setText(mCityWeather.getCurUVIndexText());
 
         Calendar c = Calendar.getInstance();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -232,8 +223,16 @@ public class PageFragment extends Fragment {
         }
         String wDate = ForecastsAdapter.week(c.get(Calendar.DAY_OF_WEEK)) + sDate;
 
+        temperature.setText(String.valueOf((int)mCityWeather.getCurTemperature() + Scale(getActivity())));
+        temperature_range.setText(MaxMin);
+        real_feel.setText(String.valueOf((int)mCityWeather.getCurRealFeelTemperature() + Scale(getActivity())));
+        weather_text.setText(mCityWeather.getCurWeatherText());
+        pressure.setText(String.valueOf(mCityWeather.getCurPressure() + " hpa"));
+        humidity.setText(String.valueOf(mCityWeather.getCurRelativeHumidity() + "%"));
+        uv_index.setText(mCityWeather.getCurUVIndexText());
         observer_time.setText(wDate);
 
+//        rvAdapter.setRecyclerViewItems(mCityWeather.getDayForecast());
         rvAdapter.notifyDataSetChanged();
         swipeContainer.setRefreshing(false);
     }
@@ -246,10 +245,8 @@ public class PageFragment extends Fragment {
                 if (message instanceof TimeoutError || message instanceof NoConnectionError)
                     Toast.makeText(getActivity(), "Network Error", Toast.LENGTH_LONG).show();
 
-                if (mCityWeather.getCityKey() != null) {
-
+                if (mCityWeather.getCityKey() != null)
                     setTodayCard();
-                }
                 else
                     Log.i(mCity + "onError","City Weather get LocationKey null");
             }
@@ -293,23 +290,25 @@ public class PageFragment extends Fragment {
             try{
                 cursor = mResolver.query(uri, projection, select, null, null);
                 if (cursor != null) {
-                    Log.i(mCity + "Cursor", "Fetch Data...");
+                    Log.i(mCity + " Cursor", "Fetch Data...");
 
                     if(cursor.moveToFirst()) {
-                        Log.d(mCity + "Cursor", cursor.getString(0) + "  " + cursor.getString(1));
-                        Log.i(mCity + "Cursor", "move to first");
+                        Log.d(mCity + " Cursor", cursor.getString(0) + "  " + cursor.getString(1));
+                        Log.i(mCity + " Cursor", "move to first");
 
                         mCityWeather.setCityKey(cursor.getString(0));
-                        mCityWeather.setCurLocalObservationDateTime(cursor.getString(1));
-                        mCityWeather.setCurIsDayTime(Boolean.valueOf(cursor.getString(2)));
-                        mCityWeather.setCurTemperature(cursor.getDouble(3));
-                        mCityWeather.setCurRealFeelTemperature(cursor.getDouble(4));
-                        mCityWeather.setCurRelativeHumidity(cursor.getInt(5));
-                        mCityWeather.setCurPressure(cursor.getInt(6));
-                        mCityWeather.setCurWeatherText(cursor.getString(7));
-                        mCityWeather.setCurrentCon(new JSONObject(cursor.getString(8)));
+//                        mCityWeather.setCurLocalObservationDateTime(cursor.getString(1));
+//                        mCityWeather.setCurIsDayTime(Boolean.valueOf(cursor.getString(2)));
+//                        mCityWeather.setCurTemperature(cursor.getDouble(3));
+//                        mCityWeather.setCurRealFeelTemperature(cursor.getDouble(4));
+//                        mCityWeather.setCurRelativeHumidity(cursor.getInt(5));
+//                        mCityWeather.setCurPressure(cursor.getInt(6));
+//                        mCityWeather.setCurWeatherText(cursor.getString(7));
+                        mCityWeather.setCurrentCondition(new JSONObject(cursor.getString(8)));
                         mCityWeather.setFiveForecasts(new JSONArray(cursor.getString(9)));
 
+                        Log.v(mCity + " Cursor CurrentCon", cursor.getString(8));
+                        Log.v(mCity + " Cursor FiveForecasts", cursor.getString(9));
                         mVolleyWeather.fetchCurrentCondition(mKey, listener, true);
                     }
                     else {

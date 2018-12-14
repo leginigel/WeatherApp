@@ -5,6 +5,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -18,7 +19,7 @@ import java.util.List;
 import j.com.weatherapp.Data.CityWeather;
 import j.com.weatherapp.Data.VolleyWeather;
 
-public class SearchFragmentViewModel extends ViewModel {
+public class SearchFragmentViewModel extends ViewModel{
 
     private final MutableLiveData<List<City>> cities = new MutableLiveData<>();
 
@@ -32,7 +33,10 @@ public class SearchFragmentViewModel extends ViewModel {
         PageFragment.VolleyResponseListener listener = new PageFragment.VolleyResponseListener() {
             @Override
             public void onError(VolleyError message) {
-                Toast.makeText(context, message.toString(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context, message.toString(), Toast.LENGTH_SHORT).show();
+                List<City> city = new ArrayList<>();
+                city.add(new City("F", "F", "F", "F"));
+                cities.setValue(city);
             }
 
             @Override

@@ -18,16 +18,16 @@
 
     <string-array name="temp_unit_value">
         <item>@string/settings_temperature_unit_auto</item>
-        <item>@string/settings_temperature_unit_centigrade</item>
+        <item>@string/settings_temperature_unit_celsius</item>
         <item>@string/settings_temperature_unit_fahrenheit</item>
         <item>@string/settings_temperature_unit_kelvin</item>
     </string-array>
 
     <string-array name="temp_unit_key">
-        <item>settings_temperature_unit_0</item>
-        <item>settings_temperature_unit_1</item>
-        <item>settings_temperature_unit_2</item>
-        <item>settings_temperature_unit_3</item>
+        <item>@string/settings_temperature_unit_auto</item>
+        <item>@string/settings_temperature_unit_celsius</item>
+        <item>@string/settings_temperature_unit_fahrenheit</item>
+        <item>@string/settings_temperature_unit_kelvin</item>
     </string-array>
 
 </resources>

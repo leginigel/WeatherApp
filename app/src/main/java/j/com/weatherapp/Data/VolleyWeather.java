@@ -39,7 +39,7 @@ public class VolleyWeather {
 
     public void fetchLocation(final String city, final PageFragment.VolleyResponseListener listener, final boolean fromSearch) {
         this.City = city;
-        Log.d(Tag, City + " fetch location");
+        Log.d(Tag, City + " fetch Location");
         String url = Host + "/locations/v1/search" + apiKey + language  + "&q=" + city;
 
         JsonArrayRequest req = new JsonArrayRequest(
@@ -70,9 +70,10 @@ public class VolleyWeather {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.i(Tag, City + " Error fetch location key");
+                        Log.i(Tag, City + " Error fetch Location key");
                         VolleyLog.e("Error: ", error.getMessage());
                         error.printStackTrace();
+                        listener.onError(error);
                     }
                 }
         )
@@ -125,18 +126,18 @@ public class VolleyWeather {
                             String UVIndexText =
                                     response.getJSONObject(0).getString("UVIndexText");
 
-                            mCityWeather.setCurrentCon(CurrentCondition);
-                            mCityWeather.setCurPressure(Pressure);
-                            mCityWeather.setCurIsDayTime(IsDay);
-                            mCityWeather.setCurWeatherText(WeatherText);
-                            mCityWeather.setCurTemperature(Temperature);
-                            mCityWeather.setCurRelativeHumidity(Humidity);
-                            mCityWeather.setCurRealFeelTemperature(RealFeel);
-                            mCityWeather.setCurLocalObservationDateTime(DateTime);
-
-                            mCityWeather.setCurWindDirection(WindDirection);
-                            mCityWeather.setCurWindSpeed(WindSpeed);
-                            mCityWeather.setCurUVIndexText(UVIndexText);
+                            mCityWeather.setCurrentCondition(CurrentCondition);
+//                            mCityWeather.setCurPressure(Pressure);
+//                            mCityWeather.setCurIsDayTime(IsDay);
+//                            mCityWeather.setCurWeatherText(WeatherText);
+//                            mCityWeather.setCurTemperature(Temperature);
+//                            mCityWeather.setCurRelativeHumidity(Humidity);
+//                            mCityWeather.setCurRealFeelTemperature(RealFeel);
+//                            mCityWeather.setCurLocalObservationDateTime(DateTime);
+//
+//                            mCityWeather.setCurWindDirection(WindDirection);
+//                            mCityWeather.setCurWindSpeed(WindSpeed);
+//                            mCityWeather.setCurUVIndexText(UVIndexText);
 
                             ContentValues values = dataCityStore(DateTime, IsDay, Temperature, RealFeel,
                                     Humidity,  Pressure,  WeatherText,  CurrentCondition.toString());

@@ -21,6 +21,8 @@ import java.util.List;
 import j.com.weatherapp.Data.DayWeather;
 import j.com.weatherapp.R;
 
+import static j.com.weatherapp.MainActivity.Scale;
+
 public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.ViewHolder>{
 
     private Context mContext;
@@ -73,7 +75,7 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
         holder.FiveDate.setText(wDate);
         holder.FiveText.setText(mDayForecast.get(position).getIconPhrase());
         holder.MaxTemperature.setText(String.valueOf((int) mDayForecast.get(position).getMaxTemperature() + "° / "));
-        holder.MinTemperature.setText(String.valueOf((int)mDayForecast.get(position).getMinTemperature() + "° C"));
+        holder.MinTemperature.setText(String.valueOf((int)mDayForecast.get(position).getMinTemperature() + Scale(mContext)));
         holder.Rain.setText(String.valueOf(mDayForecast.get(position).getRainProbability() + "%"));
 
     }

@@ -10,6 +10,7 @@ import java.util.List;
 
 public class SharedViewModel extends ViewModel {
 
+    private final  MutableLiveData<String> metric = new MutableLiveData<>();
     private final MutableLiveData<Integer> selected = new MutableLiveData<>();
     private MutableLiveData<List<String>> cityList;
 

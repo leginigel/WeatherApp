@@ -13,7 +13,7 @@
     <string name="settings_update_24">Every 24 hours</string>
 
     <string name="settings_temperature_unit_auto">Auto(°C)</string>
-    <string name="settings_temperature_unit_centigrade">°C</string>
+    <string name="settings_temperature_unit_celsius">°C</string>
     <string name="settings_temperature_unit_fahrenheit">°F</string>
     <string name="settings_temperature_unit_kelvin">K</string>
 </resources>

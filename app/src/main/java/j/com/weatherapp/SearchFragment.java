@@ -51,31 +51,14 @@ public class SearchFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         searchView = view.findViewById(R.id.searchView);
         recyclerView = view.findViewById(R.id.search_rv);
-//        CityWeather cityWeather = new CityWeather();
-//        VolleyWeather volleyWeather = new VolleyWeather(getActivity(), cityWeather);
-//
-//        listener = new PageFragment.VolleyResponseListener() {
-//            @Override
-//            public void onError(VolleyError message) {
-//
-//            }
-//
-//            @Override
-//            public void onResponse(Object response) {
-////                SharedPreferences mSetting = getActivity().getSharedPreferences("Setting", 0);
-////                SharedPreferences.Editor editor = mSetting.edit();
-////                editor.putString(cityWeather.getCityName(), cityWeather.getCityKey());
-////                editor.apply();
-//                Log.v(Tag, response.toString());
-//            }
-//        };
+
+        MainActivity.bottomNavigationView.setVisibility(View.GONE);
+        MainActivity.bottomNavigationView.setAlpha(0);
 
         searchView.setIconified(false);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-//                volleyWeather.fetchLocation(query, listener, true);
-
                 searchListAdapter.clearItems();
                 viewModel.searchCity(getActivity(), query);
 
@@ -88,6 +71,16 @@ public class SearchFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;
+            }
+        });
+        searchView.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                MainActivity.bottomNavigationView.setVisibility(View.GONE);
+                MainActivity.bottomNavigationView.setAlpha(0);
+            }
+            else {
+                MainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+                MainActivity.bottomNavigationView.animate().alpha(1).setDuration(1000).start();
             }
         });
 

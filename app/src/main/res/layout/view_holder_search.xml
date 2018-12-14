@@ -4,16 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="android.view.View"/>
         <variable
             name="city"
             type="j.com.weatherapp.City" />
-
+        <variable
+            name="listener"
+            type="j.com.weatherapp.SearchListAdapter" />
     </data>
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{(view)-> listener.onSearchToAddClick(city)}"
         app:cardUseCompatPadding="true">
 
         <android.support.constraint.ConstraintLayout

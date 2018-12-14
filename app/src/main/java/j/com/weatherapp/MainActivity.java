@@ -1,9 +1,12 @@
 package j.com.weatherapp;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -33,7 +36,22 @@ public class MainActivity extends AppCompatActivity{
     public static ViewPager viewPager;
     public static WeatherFragmentPageAdapter WFPA;
 
-
+    public static String Scale(Context context){
+        String Celsius = "°C", Fahrenheit = "°F", Kelvin = "K";
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        String scale = sharedPref.getString("metric", Celsius);
+        Log.d("Metric", scale);
+        switch (scale){
+            case "°C":
+                return Celsius;
+            case "°F":
+                return Fahrenheit;
+            case "K":
+                return Kelvin;
+            default:
+                return Celsius;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

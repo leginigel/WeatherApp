@@ -19,6 +19,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import static j.com.weatherapp.MainActivity.Scale;
+
 public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHolder> {
 
     private List<String> mCityList;
@@ -53,7 +55,8 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
                         .remove(fragment)
                         .commit();
         });
-        viewHolder.CityTemp.setText(Temperature.getString(mCityList.get(i), null));
+        viewHolder.CityTemp.setText(String.valueOf
+                (Temperature.getString(mCityList.get(i), null) + Scale(mContext)));
         viewHolder.CityName.setText(mCityList.get(i));
         if (mCityPage == i) viewHolder.CityCard.setBackgroundColor(Color.GRAY);
     }

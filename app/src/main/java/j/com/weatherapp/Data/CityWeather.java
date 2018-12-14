@@ -19,9 +19,9 @@ public class CityWeather {
     String cityCountry;
     String cityArea;
 
-    JSONArray location;
-    JSONObject currentCon;
-    JSONArray fiveForecasts;
+    JSONArray Location;
+    JSONObject CurrentCondition;
+    JSONArray FiveForecasts;
 
     String curLocalObservationDateTime;
     String curWeatherText;
@@ -42,11 +42,11 @@ public class CityWeather {
     }
 
     public JSONArray getLocation() {
-        return location;
+        return Location;
     }
 
     public void setLocation(JSONArray location) {
-        this.location = location;
+        this.Location = location;
         for (int i = 0; i < location.length(); i++) {
             try {
                 String key = location.getJSONObject(i).getString("Key");
@@ -66,21 +66,32 @@ public class CityWeather {
         }
     }
 
-    public JSONObject getCurrentCon() {
-        return currentCon;
+    public JSONObject getCurrentCondition() {
+        return CurrentCondition;
     }
 
-    public void setCurrentCon(JSONObject currentCon) {
-        this.currentCon = currentCon;
+    public void setCurrentCondition(JSONObject currentCondition) throws JSONException {
+        this.CurrentCondition = currentCondition;
+        setCurLocalObservationDateTime(currentCondition.getString("LocalObservationDateTime"));
+        setCurWeatherText(currentCondition.getString("WeatherText"));
+        setCurIsDayTime(currentCondition.getBoolean("IsDayTime"));
+        setCurTemperature(currentCondition.getJSONObject("Temperature").getJSONObject("Metric").getDouble("Value"));
+        setCurRealFeelTemperature(currentCondition.getJSONObject("RealFeelTemperature").getJSONObject("Metric").getDouble("Value"));
+        setCurRelativeHumidity(currentCondition.getInt("RelativeHumidity"));
+        setCurPressure(currentCondition.getJSONObject("Pressure").getJSONObject("Metric").getInt("Value"));
+
+        setCurWindSpeed(currentCondition.getJSONObject("Wind").getJSONObject("Speed").getJSONObject("Metric").getDouble("UnitType"));
+        setCurWindDirection(currentCondition.getJSONObject("Wind").getJSONObject("Direction").getString("Localized"));
+        setCurUVIndexText(currentCondition.getString("UVIndexText"));
     }
 
     public JSONArray getFiveForecasts() {
-        return fiveForecasts;
+        return FiveForecasts;
     }
 
     public void setFiveForecasts(JSONArray fiveForecasts) {
-        this.fiveForecasts = fiveForecasts;
-        for (int i = 0; i <=4; i++) {
+        this.FiveForecasts = fiveForecasts;
+        for (int i = 0; i < fiveForecasts.length(); i++) {
             try {
                 DayWeather dayWeather = new DayWeather();
                 dayWeather.setJsonWeather(fiveForecasts.getJSONObject(i));
@@ -220,7 +231,7 @@ public class CityWeather {
         public static final String CONTENT_AUTHORITY = "com.j.provider.Data.WeatherProvider";
         private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
-        // Content URI represents the base location for the table
+        // Content URI represents the base Location for the table
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_CITY).build();
         // These are special type prefixes that specify if a URI returns a list or a specific item

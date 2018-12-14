@@ -64,12 +64,6 @@
                     android:text="100"
                     android:textSize="25sp" />
 
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="°C"
-                    android:textSize="25sp" />
             </LinearLayout>
 
             <TextView
