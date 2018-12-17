@@ -1,12 +1,14 @@
 package j.com.weatherapp;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +28,7 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
     private List<String> mCityList;
     private Context mContext;
     private int mCityPage;
+    private SharedViewModel vm;
 
     public CityListAdapter(Context context, List<String> list) {
         this.mCityList = list;
@@ -43,10 +46,11 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull CityListAdapter.ViewHolder viewHolder, int i) {
         SharedPreferences Temperature = mContext.getSharedPreferences("Temperature", Context.MODE_PRIVATE);
-
+        vm = ViewModelProviders.of((FragmentActivity) mContext).get(SharedViewModel.class);
         viewHolder.CityCard.setOnClickListener(v -> {
-            MainActivity.viewPager.setCurrentItem(i);
+//            MainActivity.viewPager.setCurrentItem(i);
 //            MainActivity.viewPager.setVisibility(View.VISIBLE);
+            vm.select(i);
             MainActivity.bottomNavigationView.setSelectedItemId(R.id.navigation_weather);
             Fragment fragment = ((AppCompatActivity) mContext).getSupportFragmentManager().findFragmentByTag("t");
             if(fragment != null)
@@ -55,10 +59,11 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
                         .remove(fragment)
                         .commit();
         });
-        viewHolder.CityTemp.setText(String.valueOf
-                (Temperature.getString(mCityList.get(i), null) + Scale(mContext)));
+        viewHolder.CityTemp.setText(String.valueOf(
+                Scale(mContext, Integer.parseInt(Temperature.getString(mCityList.get(i), "0"))) + Scale(mContext)));
         viewHolder.CityName.setText(mCityList.get(i));
-        if (mCityPage == i) viewHolder.CityCard.setBackgroundColor(Color.GRAY);
+        if (mCityPage == i) viewHolder.CityCard.setBackgroundColor(Color.LTGRAY);
+        else viewHolder.CityCard.setBackgroundColor(Color.WHITE);
     }
 
     @Override
@@ -87,10 +92,12 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
     public void removeItem(int pos){
         mCityList.remove(pos);
         notifyItemRemoved(pos);
+        vm.setCityList(mCityList);
     }
 
     public void restoreCity(String city, int pos){
         mCityList.add(pos, city);
         notifyItemInserted(pos);
+        vm.setCityList(mCityList);
     }
 }

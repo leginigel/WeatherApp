@@ -74,8 +74,10 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
 
         holder.FiveDate.setText(wDate);
         holder.FiveText.setText(mDayForecast.get(position).getIconPhrase());
-        holder.MaxTemperature.setText(String.valueOf((int) mDayForecast.get(position).getMaxTemperature() + "° / "));
-        holder.MinTemperature.setText(String.valueOf((int)mDayForecast.get(position).getMinTemperature() + Scale(mContext)));
+        holder.MaxTemperature.setText(
+                String.valueOf(Scale(mContext, (int) mDayForecast.get(position).getMaxTemperature()) + "° / "));
+        holder.MinTemperature.setText(
+                String.valueOf(Scale(mContext, (int)mDayForecast.get(position).getMinTemperature()) + Scale(mContext)));
         holder.Rain.setText(String.valueOf(mDayForecast.get(position).getRainProbability() + "%"));
 
     }

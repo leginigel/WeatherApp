@@ -81,13 +81,17 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
     public void onSearchToAddClick(City city){
         List<String> list = vm.getCityList().getValue();
-        list.add(city.getCityName());
+        if (!isActive(city)) {
+            list.add(city.getCityName());
+
+        }
         Log.d(this.getClass().getSimpleName(), "onClick");
         Log.d(this.getClass().getSimpleName(), list.get(0));
         Log.d(this.getClass().getSimpleName(), city.getCityName());
-        vm.setCityList(list);
 
-        MainActivity.viewPager.setCurrentItem(list.size()-1);
+        vm.setCityList(list);
+        vm.select(list.size()-1);
+
         MainActivity.bottomNavigationView.setSelectedItemId(R.id.navigation_weather);
         Fragment fragment = ((AppCompatActivity) mContext).getSupportFragmentManager().findFragmentByTag("t");
         if(fragment != null)
@@ -95,6 +99,17 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
                     .beginTransaction()
                     .remove(fragment)
                     .commit();
+    }
+
+    public boolean isActive(City city){
+        List<City> list = vm.getCity().getValue();
+        for (City cityList : list){
+            if (cityList.getCityName().equals(city.getCityName()) &&
+                    cityList.getCityArea().equals(city.getCityArea()) &&
+                    cityList.getCityCountry().equals(city.getCityCountry()))
+                return true;
+        }
+        return false;
     }
 
     void clearItems() {

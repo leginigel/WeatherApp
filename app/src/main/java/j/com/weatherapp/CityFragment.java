@@ -62,7 +62,9 @@ public class CityFragment extends Fragment
             cityListAdapter.notifyDataSetChanged();
         });
         model.getSelected().observe(getActivity(), (pos)-> {
-            cityListAdapter.setCityPage(pos); });
+            cityListAdapter.setCityPage(pos);
+            cityListAdapter.notifyDataSetChanged();
+        });
     }
 
     @Override

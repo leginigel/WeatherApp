@@ -1,5 +1,6 @@
 package j.com.weatherapp;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -25,6 +26,7 @@ import android.support.v7.preference.ListPreference;
 public class SettingFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener{
 
     private OnFragmentInteractionListener mListener;
+    private SharedViewModel model;
 
     public SettingFragment() {
         // Required empty public constructor
@@ -36,22 +38,27 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
     }
 
     @Override
-    public void onCreatePreferencesFix(Bundle savedInstanceState, String rootKey) {
-        setPreferencesFromResource(R.xml.preferences, rootKey);
-        Preference listPreference = findPreference("auto_update_value");
-//        listPreference.setVisible(false);
-        //if you are using default SharedPreferences
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-//        onPreferenceChange(sharedPrefs, "auto_update_value");
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        model = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
     }
 
+    @Override
+    public void onCreatePreferencesFix(Bundle savedInstanceState, String rootKey) {
+        setPreferencesFromResource(R.xml.preferences, rootKey);
 
+        //if you are using default SharedPreferences
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        ListPreference lp = (ListPreference)findPreference("metric");
+        CharSequence[] entries = lp.getEntries();
+        lp.setSummary(entries[lp.findIndexOfValue(sharedPrefs.getString("metric", ""))]);
+//        onPreferenceChange(sharedPrefs, "metric");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         view.setBackgroundColor(Color.WHITE);
-
 
         return view;
     }
@@ -85,6 +92,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Prefere
         ListPreference lp = (ListPreference)findPreference(preference.getKey());
         CharSequence[] entries = lp.getEntries();
         lp.setSummary(entries[lp.findIndexOfValue((String) o)]);
+        model.setCityList(model.getCityList().getValue());
         return true;
     }
 

@@ -11,8 +11,27 @@ import java.util.List;
 public class SharedViewModel extends ViewModel {
 
     private final  MutableLiveData<String> metric = new MutableLiveData<>();
-    private final MutableLiveData<Integer> selected = new MutableLiveData<>();
+    private MutableLiveData<Integer> viewpager_selected;
     private MutableLiveData<List<String>> cityList;
+    private MutableLiveData<List<City>> City;
+
+    public LiveData<List<City>> getCity(){
+        if (City == null) {
+            City = new MutableLiveData<>();
+            List<City> list = new ArrayList<>();
+            list.add(new City("Taipei", "Asia", "Taiwan", "R.O.C"));
+            list.add(new City("London", "Europe", "Greater London", "United Kingdom"));
+            City.setValue(list);
+            Log.d("ViewModel", "City = null");
+        }
+
+        Log.d("ViewModel", "City");
+        return City;
+    }
+
+    public void setCity(List<City> city){
+        this.City.setValue(city);
+    }
 
     public LiveData<List<String >> getCityList(){
         if (cityList == null) {
@@ -33,10 +52,14 @@ public class SharedViewModel extends ViewModel {
     }
 
     public void select(int item) {
-        selected.setValue(item);
+        viewpager_selected.setValue(item);
     }
 
     public LiveData<Integer> getSelected() {
-        return selected;
+        if (viewpager_selected == null) {
+            viewpager_selected = new MutableLiveData<>();
+            viewpager_selected.setValue(0);
+        }
+        return viewpager_selected;
     }
 }

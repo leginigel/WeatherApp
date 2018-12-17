@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity{
         String Celsius = "°C", Fahrenheit = "°F", Kelvin = "K";
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         String scale = sharedPref.getString("metric", Celsius);
-        Log.d("Metric", scale);
         switch (scale){
             case "°C":
                 return Celsius;
@@ -53,6 +52,22 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    public static Integer Scale(Context context, int temperature){
+        String Celsius = "°C";
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        String scale = sharedPref.getString("metric", Celsius);
+        switch (scale){
+            case "°C":
+                return temperature;
+            case "°F":
+                return Math.round((temperature*9/5)+32);
+            case "K":
+                return Math.round(temperature+273.15f);
+            default:
+                return temperature;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,8 +75,14 @@ public class MainActivity extends AppCompatActivity{
 
         SharedViewModel model = ViewModelProviders.of(this).get(SharedViewModel.class);
         model.getCityList().observe(this, city ->{
+            Log.d(Tag, "observe city list");
             cityList = city;
             WFPA.notifyDataSetChanged();
+            viewPager.setAdapter(WFPA);
+        });
+        model.getSelected().observe(this, select ->{
+            Log.d(Tag, "observe city select");
+            viewPager.setCurrentItem(select);
         });
 
 //        ActivityMainBinding binding;
@@ -81,7 +102,7 @@ public class MainActivity extends AppCompatActivity{
 //                        viewPager.setVisibility(View.GONE);
                     getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.frame_fragmentholder, settingFragment, "t")
+                            .replace(R.id.frame_fragmentholder, settingFragment, "setting")
                             .commit();
                     return true;
                 case R.id.navigation_list:
@@ -89,16 +110,27 @@ public class MainActivity extends AppCompatActivity{
                     Bundle bundle = new Bundle();
                     bundle.putStringArrayList("CityList", (ArrayList<String>) cityList);
                     cityFragment.setArguments(bundle);
+//                    if (!cityFragment.isAdded()){
+//                        getSupportFragmentManager()
+//                                .beginTransaction()
+//                                .add(R.id.frame_fragmentholder, cityFragment)
+//                                .commit();
+//                    }
+//                    else
+//                        getSupportFragmentManager()
+//                                .beginTransaction()
+//                                .show(cityFragment)
+//                                .commit();
                     getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.frame_fragmentholder, cityFragment, "t")
+                            .replace(R.id.frame_fragmentholder, cityFragment, "list")
                             .commit();
                     return true;
                 case R.id.navigation_search:
 //                        viewPager.setVisibility(View.GONE);
                     getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.frame_fragmentholder, searchFragment, "t")
+                            .replace(R.id.frame_fragmentholder, searchFragment, "search")
                             .commit();
                     return true;
                 case R.id.navigation_weather:
@@ -106,7 +138,13 @@ public class MainActivity extends AppCompatActivity{
 //                        for (Fragment fragment:getSupportFragmentManager().getFragments()) {
 //                            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 //                        }
-                    Fragment fragment = getSupportFragmentManager().findFragmentByTag("t");
+//                    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.frame_fragmentholder);
+//                    if(fragment != null)
+//                        getSupportFragmentManager()
+//                                .beginTransaction()
+//                                .hide(fragment)
+//                                .commit();
+                    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.frame_fragmentholder);
                     if(fragment != null)
                         getSupportFragmentManager()
                                 .beginTransaction()
@@ -127,7 +165,7 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public void onPageSelected(int i) {
-                Log.d(Tag, "page select"+i);
+                Log.d(Tag, "page select "+i);
                 model.select(i);
             }
 

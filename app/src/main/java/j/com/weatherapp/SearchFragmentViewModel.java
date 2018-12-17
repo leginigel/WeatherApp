@@ -35,7 +35,7 @@ public class SearchFragmentViewModel extends ViewModel{
             public void onError(VolleyError message) {
 //                Toast.makeText(context, message.toString(), Toast.LENGTH_SHORT).show();
                 List<City> city = new ArrayList<>();
-                city.add(new City("F", "F", "F", "F"));
+                city.add(new City("Tokyo", "Asia", "Tokyo", "Japan"));
                 cities.setValue(city);
             }
 

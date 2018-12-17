@@ -14,7 +14,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
@@ -73,7 +75,7 @@ public class PageFragment extends Fragment {
         mResolver = getActivity().getContentResolver();
         mSetting = getActivity().getSharedPreferences("Setting", 0);
         mKey = mSetting.getString(mCity, null);
-        Log.i("OnCreate", "city:" + mKey);
+        Log.i(this.getClass().getSimpleName(), "onCreate city:" + mKey);
 
         mCityWeather = new CityWeather();
         mVolleyWeather = new VolleyWeather(getActivity(), mCityWeather);
@@ -141,36 +143,41 @@ public class PageFragment extends Fragment {
             }
         });
 
-//        nsv.setOnTouchListener(
-//                new NestedScrollView.OnTouchListener() {
-//                    private long startClickTime;
-//                    @Override
-//                    public boolean onTouch(View view, MotionEvent event) {
-//                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//                            startClickTime = System.currentTimeMillis();
-////                                           Log.d("Frag", "OnTouchd");
-//                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
-//
-//                            if (System.currentTimeMillis() - startClickTime < ViewConfiguration.getTapTimeout()) {
-//                                // Touch was a simple tap. Do whatever.
-//                                if (bottomNavigationView.getVisibility() == View.GONE) {
-//                                    MainActivity.bottomNavigationView.animate().alpha(1).setDuration(500).start();
-//                                    MainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
-//                                }
-//                                else {
-//                                    MainActivity.bottomNavigationView.setAlpha(0);
-//                                    MainActivity.bottomNavigationView.setVisibility(View.GONE);
-//                                }
-////                                               Log.d("Frag", "OnTouchu");
-//                            } else {
-//                                // Touch was a not a simple tap.
-////                                               Log.d("Frag", "OnTouche");
-//                            }
-//                        }
-//                        return true;
-//                    }
-//                }
-//        );
+        nsv.setOnTouchListener(
+                new NestedScrollView.OnTouchListener() {
+                    private long startClickTime;
+
+                    @Override
+                    public boolean onTouch(View view, MotionEvent event) {
+
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            startClickTime = System.currentTimeMillis();
+//                                           Log.d("Frag", "OnTouchd");
+                        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+
+                            if (System.currentTimeMillis() - startClickTime < ViewConfiguration.getTapTimeout()) {
+                                // Touch was a simple tap. Do whatever.
+                                if (MainActivity.bottomNavigationView.getVisibility() == View.GONE) {
+                                    MainActivity.bottomNavigationView.animate().alpha(1).setDuration(500).start();
+                                    MainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+                                }
+                                else {
+                                    MainActivity.bottomNavigationView.setAlpha(0);
+                                    MainActivity.bottomNavigationView.setVisibility(View.GONE);
+                                }
+//                                               Log.d("Frag", "OnTouchu");
+                                view.performClick();
+                                return true;
+                            } else {
+                                // Touch was a not a simple tap.
+//                                               Log.d("Frag", "OnTouche");
+                                return false;
+                            }
+                        }
+                        return false;
+                    }
+                }
+        );
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
@@ -201,8 +208,9 @@ public class PageFragment extends Fragment {
 
         String MaxMin = null;
         if (!mCityWeather.getDayForecast().isEmpty()) {
-            MaxMin = String.valueOf((int)mCityWeather.getDayForecast().get(0).getMaxTemperature())
-                    + "° / " + String.valueOf((int)mCityWeather.getDayForecast().get(0).getMinTemperature())
+            MaxMin = String.valueOf(Scale(getActivity(), (int)mCityWeather.getDayForecast().get(0).getMaxTemperature()))
+                    + "° / "
+                    + String.valueOf(Scale(getActivity(), (int)mCityWeather.getDayForecast().get(0).getMinTemperature()))
                     + Scale(getActivity());
         }
 
@@ -223,9 +231,11 @@ public class PageFragment extends Fragment {
         }
         String wDate = ForecastsAdapter.week(c.get(Calendar.DAY_OF_WEEK)) + sDate;
 
-        temperature.setText(String.valueOf((int)mCityWeather.getCurTemperature() + Scale(getActivity())));
+        temperature.setText(
+                String.valueOf(Scale(getActivity(), (int)mCityWeather.getCurTemperature()) + Scale(getActivity())));
         temperature_range.setText(MaxMin);
-        real_feel.setText(String.valueOf((int)mCityWeather.getCurRealFeelTemperature() + Scale(getActivity())));
+        real_feel.setText(
+                String.valueOf(Scale(getActivity(), (int)mCityWeather.getCurRealFeelTemperature()) + Scale(getActivity())));
         weather_text.setText(mCityWeather.getCurWeatherText());
         pressure.setText(String.valueOf(mCityWeather.getCurPressure() + " hpa"));
         humidity.setText(String.valueOf(mCityWeather.getCurRelativeHumidity() + "%"));
