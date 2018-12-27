@@ -36,38 +36,6 @@ public class MainActivity extends AppCompatActivity{
     public static ViewPager viewPager;
     public static WeatherFragmentPageAdapter WFPA;
 
-    public static String Scale(Context context){
-        String Celsius = "°C", Fahrenheit = "°F", Kelvin = "K";
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        String scale = sharedPref.getString("metric", Celsius);
-        switch (scale){
-            case "°C":
-                return Celsius;
-            case "°F":
-                return Fahrenheit;
-            case "K":
-                return Kelvin;
-            default:
-                return Celsius;
-        }
-    }
-
-    public static Integer Scale(Context context, int temperature){
-        String Celsius = "°C";
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        String scale = sharedPref.getString("metric", Celsius);
-        switch (scale){
-            case "°C":
-                return temperature;
-            case "°F":
-                return Math.round((temperature*9/5)+32);
-            case "K":
-                return Math.round(temperature+273.15f);
-            default:
-                return temperature;
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

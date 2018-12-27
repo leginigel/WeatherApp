@@ -15,6 +15,18 @@ public class SharedViewModel extends ViewModel {
     private MutableLiveData<List<String>> cityList;
     private MutableLiveData<List<City>> City;
 
+    public void addCity(City city){
+        List<City> temp = this.City.getValue();
+        temp.add(city);
+        this.City.setValue(temp);
+    }
+
+    public void removeCity(int position){
+        List<City> temp = this.City.getValue();
+        temp.remove(position);
+        this.City.setValue(temp);
+    }
+
     public LiveData<List<City>> getCity(){
         if (City == null) {
             City = new MutableLiveData<>();

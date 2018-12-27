@@ -20,8 +20,9 @@ import java.util.List;
 
 import j.com.weatherapp.Data.DayWeather;
 import j.com.weatherapp.R;
+import j.com.weatherapp.Utils;
 
-import static j.com.weatherapp.MainActivity.Scale;
+import static j.com.weatherapp.Utils.Scale;
 
 public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.ViewHolder>{
 
@@ -70,7 +71,7 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
             e.printStackTrace();
         }
 
-        String wDate = week(c.get(Calendar.DAY_OF_WEEK)) + sDate;
+        String wDate = Utils.week(c.get(Calendar.DAY_OF_WEEK)) + sDate;
 
         holder.FiveDate.setText(wDate);
         holder.FiveText.setText(mDayForecast.get(position).getIconPhrase());
@@ -80,20 +81,6 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
                 String.valueOf(Scale(mContext, (int)mDayForecast.get(position).getMinTemperature()) + Scale(mContext)));
         holder.Rain.setText(String.valueOf(mDayForecast.get(position).getRainProbability() + "%"));
 
-    }
-
-    public static String week(int week){
-        String s_week = "";
-        switch (week){
-            case 1:s_week += "Sun ";break;
-            case 2:s_week += "Mon ";break;
-            case 3:s_week += "Tue ";break;
-            case 4:s_week += "Wed ";break;
-            case 5:s_week += "Thu ";break;
-            case 6:s_week += "Fri ";break;
-            case 7:s_week += "Sat ";break;
-        }
-        return s_week;
     }
 
     @Override

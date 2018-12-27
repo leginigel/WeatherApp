@@ -1,12 +1,10 @@
 package j.com.weatherapp;
 
-import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -18,10 +16,9 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static j.com.weatherapp.MainActivity.Scale;
+import static j.com.weatherapp.Utils.Scale;
 
 public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHolder> {
 
@@ -93,6 +90,7 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
         mCityList.remove(pos);
         notifyItemRemoved(pos);
         vm.setCityList(mCityList);
+        vm.removeCity(pos);
     }
 
     public void restoreCity(String city, int pos){

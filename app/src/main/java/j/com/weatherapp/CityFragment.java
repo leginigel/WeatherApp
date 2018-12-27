@@ -57,10 +57,10 @@ public class CityFragment extends Fragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        model.getCityList().observe(getActivity(), city ->{
-            cityList = city;
-            cityListAdapter.notifyDataSetChanged();
-        });
+//        model.getCityList().observe(getActivity(), city ->{
+//            cityList = city;
+//            cityListAdapter.notifyDataSetChanged();
+//        });
         model.getSelected().observe(getActivity(), (pos)-> {
             cityListAdapter.setCityPage(pos);
             cityListAdapter.notifyDataSetChanged();
@@ -131,51 +131,4 @@ public class CityFragment extends Fragment
         }
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.v("city", "stop");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.v("city", "destroy");
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Log.v("city", "detach");
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.v("city", "start");
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.v("city", "destoryview");
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Log.v("city", "attach");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.v("city", "pause");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.v("city", "resume");
-    }
 }

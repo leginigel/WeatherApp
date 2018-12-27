@@ -83,7 +83,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         List<String> list = vm.getCityList().getValue();
         if (!isActive(city)) {
             list.add(city.getCityName());
-
+            vm.addCity(city);
         }
         Log.d(this.getClass().getSimpleName(), "onClick");
         Log.d(this.getClass().getSimpleName(), list.get(0));

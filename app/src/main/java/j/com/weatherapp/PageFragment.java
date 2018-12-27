@@ -38,7 +38,7 @@ import j.com.weatherapp.Data.CityWeather;
 import j.com.weatherapp.Data.VolleyWeather;
 import j.com.weatherapp.Weather.ForecastsAdapter;
 
-import static j.com.weatherapp.MainActivity.Scale;
+import static j.com.weatherapp.Utils.Scale;
 import static j.com.weatherapp.MainActivity.url;
 
 public class PageFragment extends Fragment {
@@ -229,7 +229,7 @@ public class PageFragment extends Fragment {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        String wDate = ForecastsAdapter.week(c.get(Calendar.DAY_OF_WEEK)) + sDate;
+        String wDate = Utils.week(c.get(Calendar.DAY_OF_WEEK)) + sDate;
 
         temperature.setText(
                 String.valueOf(Scale(getActivity(), (int)mCityWeather.getCurTemperature()) + Scale(getActivity())));
@@ -315,6 +315,8 @@ public class PageFragment extends Fragment {
 //                        mCityWeather.setCurPressure(cursor.getInt(6));
 //                        mCityWeather.setCurWeatherText(cursor.getString(7));
                         mCityWeather.setCurrentCondition(new JSONObject(cursor.getString(8)));
+
+                        mCityWeather.getDayForecast().clear();
                         mCityWeather.setFiveForecasts(new JSONArray(cursor.getString(9)));
 
                         Log.v(mCity + " Cursor CurrentCon", cursor.getString(8));
