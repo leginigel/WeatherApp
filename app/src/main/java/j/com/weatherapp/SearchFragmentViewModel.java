@@ -16,18 +16,20 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
+import j.com.weatherapp.City;
 import j.com.weatherapp.Data.CityWeather;
 import j.com.weatherapp.Data.VolleyWeather;
+import j.com.weatherapp.PageFragment;
 
 public class SearchFragmentViewModel extends ViewModel{
 
     private final MutableLiveData<List<City>> cities = new MutableLiveData<>();
 
-    LiveData<List<City>> getCities() {
+    public LiveData<List<City>> getCities() {
         return cities;
     }
 
-    void searchCity(Context context, String query){
+    public void searchCity(Context context, String query){
         CityWeather cityWeather = new CityWeather();
         VolleyWeather volleyWeather = new VolleyWeather(context, cityWeather);
         PageFragment.VolleyResponseListener listener = new PageFragment.VolleyResponseListener() {

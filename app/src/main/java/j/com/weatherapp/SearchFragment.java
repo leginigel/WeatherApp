@@ -1,12 +1,11 @@
 package j.com.weatherapp;
 
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,14 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 
-import com.android.volley.VolleyError;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import j.com.weatherapp.Data.CityWeather;
-import j.com.weatherapp.Data.VolleyWeather;
-import j.com.weatherapp.databinding.FragmentSearchBinding;
 
 
 /**
@@ -35,10 +28,10 @@ public class SearchFragment extends Fragment {
     private String Tag = SearchFragment.class.getSimpleName();
     private SearchView searchView;
     private RecyclerView recyclerView;
-    private SearchListAdapter searchListAdapter = new SearchListAdapter(new ArrayList<>());
-
-
+    private SearchListAdapter searchListAdapter = new SearchListAdapter(new ArrayList<>(), this);
     private SearchFragmentViewModel viewModel;
+    private SharedViewModel vm;
+
     public SearchFragment() {
         // Required empty public constructor
     }
@@ -100,5 +93,40 @@ public class SearchFragment extends Fragment {
         viewModel.getCities().observe(getActivity(), (city) ->{
             searchListAdapter.swapItems(city);
         });
+        vm = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
     }
+
+    public void onSearchToAddClick(City city){
+        List<String> list = vm.getCityList().getValue();
+        if (!isActive(city)) {
+            list.add(city.getCityName());
+            vm.addCity(city);
+        }
+        Log.d(this.getClass().getSimpleName(), "onClick");
+        Log.d(this.getClass().getSimpleName(), list.get(0));
+        Log.d(this.getClass().getSimpleName(), city.getCityName());
+
+        vm.setCityList(list);
+        vm.select(list.size()-1);
+
+        MainActivity.bottomNavigationView.setSelectedItemId(R.id.navigation_weather);
+        Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag("t");
+        if(fragment != null)
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(fragment)
+                    .commit();
+    }
+
+    public boolean isActive(City city){
+        List<City> list = vm.getCity().getValue();
+        for (City cityList : list){
+            if (cityList.getCityName().equals(city.getCityName()) &&
+                    cityList.getCityArea().equals(city.getCityArea()) &&
+                    cityList.getCityCountry().equals(city.getCityCountry()))
+                return true;
+        }
+        return false;
+    }
+
 }

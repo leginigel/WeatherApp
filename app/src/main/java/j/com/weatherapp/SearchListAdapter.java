@@ -20,8 +20,10 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     private List<City> items;
     private SharedViewModel vm;
     private Context mContext;
-    public SearchListAdapter(List<City> items) {
+    private SearchFragment searchFragment;
+    public SearchListAdapter(List<City> items, SearchFragment searchFragment) {
         this.items = items;
+        this.searchFragment = searchFragment;
     }
 
     @NonNull
@@ -36,7 +38,8 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull SearchListAdapter.ViewHolder viewHolder, int i) {
-        vm = ViewModelProviders.of((FragmentActivity) viewHolder.getContext()).get(SharedViewModel.class);
+//        vm = ViewModelProviders.of((FragmentActivity) viewHolder.getContext()).get(SharedViewModel.class);
+        viewHolder.setSearchFragment(searchFragment);
         viewHolder.setListAdapter(this);
         viewHolder.setBinding(items.get(i));
 //        viewHolder.binding.getRoot().setOnClickListener(new View.OnClickListener() {
@@ -57,6 +60,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         private ViewHolderSearchBinding binding;
         private final Context context;
         private SearchListAdapter searchListAdapter;
+        private SearchFragment searchFragment;
 
         public ViewHolder(ViewHolderSearchBinding binding, Context context) {
             super(binding.getRoot());
@@ -71,45 +75,16 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
         void setListAdapter(SearchListAdapter searchListAdapter){
             this.searchListAdapter = searchListAdapter;
-            binding.setListener(searchListAdapter);
+        }
+
+        void setSearchFragment(SearchFragment searchFragment){
+            this.searchFragment = searchFragment;
+            binding.setListener(searchFragment);
         }
 
         public Context getContext() {
             return context;
         }
-    }
-
-    public void onSearchToAddClick(City city){
-        List<String> list = vm.getCityList().getValue();
-        if (!isActive(city)) {
-            list.add(city.getCityName());
-            vm.addCity(city);
-        }
-        Log.d(this.getClass().getSimpleName(), "onClick");
-        Log.d(this.getClass().getSimpleName(), list.get(0));
-        Log.d(this.getClass().getSimpleName(), city.getCityName());
-
-        vm.setCityList(list);
-        vm.select(list.size()-1);
-
-        MainActivity.bottomNavigationView.setSelectedItemId(R.id.navigation_weather);
-        Fragment fragment = ((AppCompatActivity) mContext).getSupportFragmentManager().findFragmentByTag("t");
-        if(fragment != null)
-            ((AppCompatActivity) mContext).getSupportFragmentManager()
-                    .beginTransaction()
-                    .remove(fragment)
-                    .commit();
-    }
-
-    public boolean isActive(City city){
-        List<City> list = vm.getCity().getValue();
-        for (City cityList : list){
-            if (cityList.getCityName().equals(city.getCityName()) &&
-                    cityList.getCityArea().equals(city.getCityArea()) &&
-                    cityList.getCityCountry().equals(city.getCityCountry()))
-                return true;
-        }
-        return false;
     }
 
     void clearItems() {

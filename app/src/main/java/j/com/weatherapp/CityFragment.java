@@ -2,7 +2,6 @@ package j.com.weatherapp;
 
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,16 +13,12 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.support.v7.widget.Toolbar;
-import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -31,7 +26,7 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class CityFragment extends Fragment
-        implements CityRecyclerItemTouch.RecyclerItemTouchHelperListener{
+        implements CityRecyclerItemTouch.RecyclerItemTouchHelperListener {
 
     private RecyclerView rv;
     private CityListAdapter cityListAdapter;
@@ -61,7 +56,7 @@ public class CityFragment extends Fragment
 //            cityList = city;
 //            cityListAdapter.notifyDataSetChanged();
 //        });
-        model.getSelected().observe(getActivity(), (pos)-> {
+        model.getSelected().observe(getActivity(), (pos) -> {
             cityListAdapter.setCityPage(pos);
             cityListAdapter.notifyDataSetChanged();
         });
@@ -113,7 +108,9 @@ public class CityFragment extends Fragment
             final int deletedIndex = viewHolder.getAdapterPosition();
 
             // remove the item from recycler view
-            cityListAdapter.removeItem(viewHolder.getAdapterPosition());
+            cityListAdapter.removeItem(deletedIndex);
+            if (model.getSelected().getValue() == deletedIndex)
+                model.select(0);
 //            MainActivity.viewPager.setAdapter(MainActivity.WFPA);
             // showing snack bar with Undo option
             Snackbar snackbar = Snackbar

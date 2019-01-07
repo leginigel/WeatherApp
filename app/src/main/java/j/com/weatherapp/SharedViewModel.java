@@ -8,12 +8,14 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import j.com.weatherapp.City;
+
 public class SharedViewModel extends ViewModel {
 
     private final  MutableLiveData<String> metric = new MutableLiveData<>();
     private MutableLiveData<Integer> viewpager_selected;
     private MutableLiveData<List<String>> cityList;
-    private MutableLiveData<List<City>> City;
+    private MutableLiveData<List<j.com.weatherapp.City>> City;
 
     public void addCity(City city){
         List<City> temp = this.City.getValue();
@@ -22,7 +24,7 @@ public class SharedViewModel extends ViewModel {
     }
 
     public void removeCity(int position){
-        List<City> temp = this.City.getValue();
+        List<City> temp = getCity().getValue();
         temp.remove(position);
         this.City.setValue(temp);
     }
@@ -71,7 +73,9 @@ public class SharedViewModel extends ViewModel {
         if (viewpager_selected == null) {
             viewpager_selected = new MutableLiveData<>();
             viewpager_selected.setValue(0);
+            Log.d("ViewModel", "viewpager_selected = null");
         }
+        Log.d("ViewModel", "viewpager_selected");
         return viewpager_selected;
     }
 }
