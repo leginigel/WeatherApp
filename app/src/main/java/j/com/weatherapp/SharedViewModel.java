@@ -3,10 +3,15 @@ package j.com.weatherapp;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.content.SharedPreferences;
 import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import j.com.weatherapp.City;
 
@@ -48,13 +53,29 @@ public class SharedViewModel extends ViewModel {
     }
 
     public LiveData<List<String >> getCityList(){
+        Set<String> set = MainActivity.sharedPreferences.getStringSet("city", null);
+//        if (set!=null) {
+//            for (String i:set)
+//                Log.d("ViewModel", ""+i);
+//        }
         if (cityList == null) {
+            Log.d("ViewModel", "citylist = null");
             cityList = new MutableLiveData<>();
             List<String> list = new ArrayList<>();
-            list.add("Taipei");
-            list.add("London");
+
+            int citySize = MainActivity.sharedPreferences.getInt("citysize", 0);
+            for (int i=0; i < citySize ;i++) {
+                String sharedPreferencesCity = MainActivity.sharedPreferences.getString("city" + i, null);
+                if (sharedPreferencesCity == null)break;
+                Log.d("ViewModel", sharedPreferencesCity);
+                list.add(sharedPreferencesCity);
+            }
+            Log.d("ViewModel", ""+list.size());
+            if (list.size() == 0) {
+                list.add("Taipei");
+                list.add("London");
+            }
             cityList.setValue(list);
-            Log.d("ViewModel", "citylist = null");
         }
 
         Log.d("ViewModel", "citylist");

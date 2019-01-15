@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import j.com.weatherapp.Data.CityWeather;
+import j.com.weatherapp.Data.VolleyResponseListener;
 import j.com.weatherapp.Data.VolleyWeather;
 import j.com.weatherapp.Weather.ForecastsAdapter;
 
@@ -137,9 +138,9 @@ public class PageFragment extends Fragment {
             @Override
             public void onRefresh() {
                 if (mKey != null)
-                    mVolleyWeather.fetchCurrentCondition(mCityWeather.getCityKey(), listener, true);
+                    checkCityExist();
                 else
-                    mVolleyWeather.fetchCurrentCondition(mCityWeather.getCityKey(), listener, false);
+                    mVolleyWeather.fetchLocation(mCity, listener, false);
             }
         });
 
@@ -197,10 +198,13 @@ public class PageFragment extends Fragment {
 
         city.setText(mCity);
 
-        setListener();
-
+        setPageListener();
+        if (mKey != null){
         checkCityExist();
-
+        }
+        else{
+            mVolleyWeather.fetchLocation(mCity, listener, false);
+        }
         return view;
     }
 
@@ -247,7 +251,7 @@ public class PageFragment extends Fragment {
         swipeContainer.setRefreshing(false);
     }
 
-    private void setListener() {
+    private void setPageListener() {
         listener = new VolleyResponseListener() {
 
             @Override
@@ -281,7 +285,6 @@ public class PageFragment extends Fragment {
     }
 
     public void checkCityExist(){
-        if (mKey != null){
             Uri uri = Uri.parse(url);
             Cursor cursor = null;
             String[] projection = {
@@ -321,9 +324,11 @@ public class PageFragment extends Fragment {
 
                         Log.v(mCity + " Cursor CurrentCon", cursor.getString(8));
                         Log.v(mCity + " Cursor FiveForecasts", cursor.getString(9));
-                        mVolleyWeather.fetchCurrentCondition(mKey, listener, true);
+//                        mVolleyWeather.fetchCurrentCondition(mKey, listener, true);
+                        setTodayCard();
                     }
                     else {
+                        Log.i(mCity + " Cursor Empty", "city weather not exit:Fetch Current Condition");
                         mVolleyWeather.fetchCurrentCondition(mKey, listener, false);
                     }
 
@@ -338,16 +343,6 @@ public class PageFragment extends Fragment {
                     cursor.close();
                 }
             }
-        }
-        else{
-            mVolleyWeather.fetchLocation(mCity, listener, false);
-        }
-    }
-
-    public interface VolleyResponseListener {
-        void onError(VolleyError message);
-
-        void onResponse(Object response);
     }
 
     private static void showOrHideView(View view, boolean shouldShow) {

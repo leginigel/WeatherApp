@@ -1,6 +1,7 @@
 package j.com.weatherapp;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -11,8 +12,13 @@ import android.util.Log;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -21,18 +27,25 @@ public class MainActivity extends AppCompatActivity{
     public static String url ="content://com.j.provider.Data.WeatherProvider/city";
     public static BottomNavigationView bottomNavigationView;
     public static List<String> cityList = new ArrayList<>();
-    public static ViewPager viewPager;
-    public static WeatherFragmentPageAdapter WFPA;
+    private ViewPager viewPager;
+    private WeatherFragmentPageAdapter WFPA;
+    public static SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sharedPreferences = getSharedPreferences("Setting", 0);
+
         SharedViewModel model = ViewModelProviders.of(this).get(SharedViewModel.class);
         model.getCityList().observe(this, city ->{
             Log.d(Tag, "observe city list");
             cityList = city;
+
+            for (String i: cityList)
+                Log.d(Tag, ""+i);
             WFPA.notifyDataSetChanged();
             viewPager.setAdapter(WFPA);
         });
@@ -140,6 +153,14 @@ public class MainActivity extends AppCompatActivity{
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll("GG");
         }
+
+        Set<String> set = new LinkedHashSet<String>(cityList);
+        editor = sharedPreferences.edit();
+//        editor.putStringSet("city", set);
+        editor.putInt("citysize", cityList.size());
+        for (int i=0; i<cityList.size();i++)
+            editor.putString("city" + i, cityList.get(i));
+        editor.commit();
     }
 
 }

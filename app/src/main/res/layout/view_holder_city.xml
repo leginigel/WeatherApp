@@ -40,41 +40,57 @@
         android:layout_height="wrap_content"
         >
 
-        <android.support.constraint.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="16dp">
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="right|center"
-                android:layout_marginEnd="8dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent">
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right|center"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <TextView
+                        android:id="@+id/city_temperature"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|center"
+                        android:text="100"
+                        android:textColor="@android:color/black"
+                        android:textSize="25sp" />
+
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/city_temperature"
+                    android:id="@+id/city_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right|center"
-                    android:text="100"
-                    android:textSize="25sp"
-                    android:textColor="@android:color/black" />
+                    android:text="text"
+                    android:textColor="@android:color/black"
+                    android:textSize="25sp" />
 
-            </LinearLayout>
 
-            <TextView
-                android:id="@+id/city_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="text"
-                android:textSize="25sp"
-                android:textColor="@android:color/black" />
-        </android.support.constraint.ConstraintLayout>
+            </android.support.constraint.ConstraintLayout>
+
+            <View
+                android:id="@+id/city_card_bottom_shadow"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:alpha="0"
+                android:background="@drawable/toolbar_shadow" />
+
+        </LinearLayout>
 
     </android.support.v7.widget.CardView>
 

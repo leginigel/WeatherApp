@@ -73,12 +73,14 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
         TextView CityName;
         TextView CityTemp;
         RelativeLayout BackGround;
+        View BottomShadow;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             CityCard = itemView.findViewById(R.id.city_card);
             CityName = itemView.findViewById(R.id.city_name);
             CityTemp = itemView.findViewById(R.id.city_temperature);
-            BackGround =itemView.findViewById(R.id.view_background);
+            BackGround = itemView.findViewById(R.id.view_background);
+            BottomShadow = itemView.findViewById(R.id.city_card_bottom_shadow);
         }
     }
 
@@ -86,11 +88,21 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.ViewHo
         mCityPage = page;
     }
 
+    public int getCityPage() {
+        return mCityPage;
+    }
+
+    public void moveItem(int fromPos, int toPos){
+        mCityList.add(toPos, mCityList.remove(fromPos));
+        notifyItemMoved(fromPos, toPos);
+        vm.setCityList(mCityList);
+    }
+
     public void removeItem(int pos){
         mCityList.remove(pos);
         notifyItemRemoved(pos);
         vm.setCityList(mCityList);
-        vm.removeCity(pos);
+//        vm.removeCity(pos);
     }
 
     public void restoreCity(String city, int pos){

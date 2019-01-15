@@ -19,7 +19,6 @@ import org.json.JSONObject;
 
 
 import j.com.weatherapp.MainActivity;
-import j.com.weatherapp.PageFragment;
 
 public class VolleyWeather {
     private static final String Host = "http://dataservice.accuweather.com";
@@ -37,7 +36,7 @@ public class VolleyWeather {
         this.mCityWeather = mCityWeather;
     }
 
-    public void fetchLocation(final String city, final PageFragment.VolleyResponseListener listener, final boolean fromSearch) {
+    public void fetchLocation(final String city, final VolleyResponseListener listener, final boolean fromSearch) {
         this.City = city;
         Log.d(Tag, City + " fetch Location");
         String url = Host + "/locations/v1/search" + apiKey + language  + "&q=" + city;
@@ -91,7 +90,9 @@ public class VolleyWeather {
     }
 
     public void fetchCurrentCondition
-            (final String key, final PageFragment.VolleyResponseListener listener, final boolean exist) {
+            (final String key, final VolleyResponseListener listener, final boolean exist) {
+        if (City == null && exist)
+            City = mCityWeather.getCityName();
         Log.i(Tag, City + " fetch current condition");
         String url = Host + "/currentconditions/v1/" + key + apiKey + detail + language;
 
@@ -187,7 +188,7 @@ public class VolleyWeather {
         MainActivity.mRequestQueue.add(req);
     }
 
-    public void fetchFiveForecasts(final PageFragment.VolleyResponseListener listener) {
+    public void fetchFiveForecasts(final VolleyResponseListener listener) {
         Log.i(Tag, City + " fetch Five Forecasts");
         String url = Host + "/forecasts/v1/daily/5day/" + mCityWeather.getCityKey() + apiKey
                 + detail + metric + language;

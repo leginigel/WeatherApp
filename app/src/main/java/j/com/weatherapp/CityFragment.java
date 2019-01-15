@@ -13,6 +13,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,7 +87,12 @@ public class CityFragment extends Fragment
         // only ItemTouchHelper.LEFT added to detect Right to Left swipe
         // if you want both Right -> Left and Left -> Right
         // add pass ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT as param
-        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new CityRecyclerItemTouch(0, ItemTouchHelper.LEFT, this);
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new CityRecyclerItemTouch(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                ItemTouchHelper.LEFT,
+                this,
+                cityListAdapter
+        );
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rv);
 
         return view;
@@ -109,8 +115,10 @@ public class CityFragment extends Fragment
 
             // remove the item from recycler view
             cityListAdapter.removeItem(deletedIndex);
-            if (model.getSelected().getValue() == deletedIndex)
+            if (cityListAdapter.getCityPage() == deletedIndex)
                 model.select(0);
+            else if (cityListAdapter.getCityPage() > deletedIndex)
+                model.select(cityListAdapter.getCityPage()-1);
 //            MainActivity.viewPager.setAdapter(MainActivity.WFPA);
             // showing snack bar with Undo option
             Snackbar snackbar = Snackbar
@@ -126,6 +134,31 @@ public class CityFragment extends Fragment
             snackbar.setActionTextColor(Color.YELLOW);
             snackbar.show();
         }
+    }
+
+    /**
+     * callback when recycler view is drag
+     * change viewpager select page
+     *
+     */
+    @Override
+    public void onMove(int fromPosition, int toPosition) {
+
+        cityListAdapter.moveItem(fromPosition, toPosition);
+
+        int selectPage = cityListAdapter.getCityPage();
+        if (fromPosition > selectPage && toPosition > selectPage ){}
+        else if (fromPosition < selectPage && toPosition < selectPage ){}
+        else if (fromPosition == selectPage)
+            model.select(toPosition);
+        else if (fromPosition < selectPage && toPosition >= selectPage)
+            model.select(selectPage-1);
+        else if (fromPosition > selectPage && toPosition <= selectPage)
+            model.select(selectPage+1);
+
+        Log.d("onMove", "fromPosition "+fromPosition);
+        Log.d("onMove", "toPosition "+toPosition);
+        Log.d("onMove", "selectPage "+cityListAdapter.getCityPage());
     }
 
 }

@@ -2,6 +2,8 @@ package j.com.weatherapp;
 
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.database.Observable;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,6 +21,8 @@ import android.widget.SearchView;
 import java.util.ArrayList;
 import java.util.List;
 
+import j.com.weatherapp.databinding.FragmentSearchBinding;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,8 +33,10 @@ public class SearchFragment extends Fragment {
     private SearchView searchView;
     private RecyclerView recyclerView;
     private SearchListAdapter searchListAdapter = new SearchListAdapter(new ArrayList<>(), this);
+
     private SearchFragmentViewModel viewModel;
     private SharedViewModel vm;
+    private FragmentSearchBinding fragmentSearchBinding;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -40,8 +46,10 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_search, container, false);
+
+        fragmentSearchBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
+        View view = fragmentSearchBinding.getRoot();
+
         searchView = view.findViewById(R.id.searchView);
         recyclerView = view.findViewById(R.id.search_rv);
 
@@ -49,6 +57,7 @@ public class SearchFragment extends Fragment {
         MainActivity.bottomNavigationView.setAlpha(0);
 
         searchView.setIconified(false);
+        searchListAdapter.clearItems();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -94,6 +103,14 @@ public class SearchFragment extends Fragment {
             searchListAdapter.swapItems(city);
         });
         vm = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
+
+        fragmentSearchBinding.setViewModel(viewModel);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        searchView.setQuery("",false);
     }
 
     public void onSearchToAddClick(City city){

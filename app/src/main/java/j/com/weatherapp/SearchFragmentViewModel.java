@@ -4,9 +4,8 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
+import android.databinding.ObservableBoolean;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
@@ -16,29 +15,36 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-import j.com.weatherapp.City;
 import j.com.weatherapp.Data.CityWeather;
+import j.com.weatherapp.Data.VolleyResponseListener;
 import j.com.weatherapp.Data.VolleyWeather;
-import j.com.weatherapp.PageFragment;
 
 public class SearchFragmentViewModel extends ViewModel{
 
     private final MutableLiveData<List<City>> cities = new MutableLiveData<>();
+    public ObservableBoolean isLoading = new ObservableBoolean(false);
 
     public LiveData<List<City>> getCities() {
         return cities;
     }
 
     public void searchCity(Context context, String query){
+        isLoading.set(true);
         CityWeather cityWeather = new CityWeather();
         VolleyWeather volleyWeather = new VolleyWeather(context, cityWeather);
-        PageFragment.VolleyResponseListener listener = new PageFragment.VolleyResponseListener() {
+        VolleyResponseListener listener = new VolleyResponseListener() {
             @Override
             public void onError(VolleyError message) {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 //                Toast.makeText(context, message.toString(), Toast.LENGTH_SHORT).show();
                 List<City> city = new ArrayList<>();
                 city.add(new City("Tokyo", "Asia", "Tokyo", "Japan"));
                 cities.setValue(city);
+                isLoading.set(false);
             }
 
             @Override
@@ -59,6 +65,7 @@ public class SearchFragmentViewModel extends ViewModel{
                     }
                 }
                 cities.setValue(city);
+                isLoading.set(false);
                 Log.v("SearchViewModel", response.toString());
             }
         };
