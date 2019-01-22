@@ -2,23 +2,29 @@ package j.com.weatherapp;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Surface;
+import android.view.SurfaceView;
+import android.widget.ImageView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import j.com.weatherapp.surfaceview.BacGImgView;
+import j.com.weatherapp.surfaceview.HaloView;
+import j.com.weatherapp.surfaceview.SinWaveView;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -36,6 +42,16 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        BacGImgView bacGImgView = findViewById(R.id.background_view);
+        bacGImgView.setZOrderOnTop(false);
+//        SinWaveView sinWaveView = findViewById(R.id.background_view1);
+//        sinWaveView.setZOrderOnTop(false);
+        HaloView haloView = findViewById(R.id.background_view1);
+        haloView.setZOrderMediaOverlay(true);
+//        addContentView(haloView, new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, CoordinatorLayout.LayoutParams.MATCH_PARENT));
+//        haloView.setZOrderOnTop(true);
+//        haloView.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT,200));
 
         sharedPreferences = getSharedPreferences("Setting", 0);
 
