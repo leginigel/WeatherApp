@@ -10,8 +10,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.android.volley.RequestQueue;
@@ -24,19 +28,22 @@ import java.util.Set;
 
 import j.com.weatherapp.surfaceview.BacGImgView;
 import j.com.weatherapp.surfaceview.HaloView;
+import j.com.weatherapp.surfaceview.RainyView;
 import j.com.weatherapp.surfaceview.SinWaveView;
 
 public class MainActivity extends AppCompatActivity{
 
     private static String Tag = MainActivity.class.getSimpleName();
-    public static RequestQueue mRequestQueue;
     public static String url ="content://com.j.provider.Data.WeatherProvider/city";
-    public static BottomNavigationView bottomNavigationView;
-    public static List<String> cityList = new ArrayList<>();
-    private ViewPager viewPager;
-    private WeatherFragmentPageAdapter WFPA;
+    public static RequestQueue mRequestQueue;
     public static SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+    private SharedViewModel model;
+    public static List<String> cityList = new ArrayList<>();
+    public static BottomNavigationView bottomNavigationView;
+    private ViewGroup mAnimatedFrame;
+    private ViewPager viewPager;
+    private WeatherFragmentPageAdapter WFPA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +52,27 @@ public class MainActivity extends AppCompatActivity{
 
         BacGImgView bacGImgView = findViewById(R.id.background_view);
         bacGImgView.setZOrderOnTop(false);
+
+        RainyView rainyView = new RainyView(this);
+        rainyView.setZOrderMediaOverlay(true);
+        HaloView haloView = new HaloView(this);
+        haloView.setZOrderMediaOverlay(true);
+        mAnimatedFrame = findViewById(R.id.frame_mid_anim);
+        mAnimatedFrame.addView(rainyView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mAnimatedFrame.removeViewAt(0);
+        mAnimatedFrame.addView(haloView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
 //        SinWaveView sinWaveView = findViewById(R.id.background_view1);
 //        sinWaveView.setZOrderOnTop(false);
-        HaloView haloView = findViewById(R.id.background_view1);
-        haloView.setZOrderMediaOverlay(true);
+//        RainyView haloView = findViewById(R.id.background_view1);
+//        haloView.setZOrderMediaOverlay(true);
 //        addContentView(haloView, new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT, CoordinatorLayout.LayoutParams.MATCH_PARENT));
 //        haloView.setZOrderOnTop(true);
 //        haloView.setLayoutParams(new CoordinatorLayout.LayoutParams(CoordinatorLayout.LayoutParams.MATCH_PARENT,200));
 
         sharedPreferences = getSharedPreferences("Setting", 0);
 
-        SharedViewModel model = ViewModelProviders.of(this).get(SharedViewModel.class);
+        model = ViewModelProviders.of(this).get(SharedViewModel.class);
         model.getCityList().observe(this, city ->{
             Log.d(Tag, "observe city list");
             cityList = city;
@@ -71,8 +88,8 @@ public class MainActivity extends AppCompatActivity{
         });
 
 //        ActivityMainBinding binding;
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigationView);
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        bottomNavigationView = findViewById(R.id.navigationView);
+        viewPager = findViewById(R.id.viewpager);
 
         WFPA = new WeatherFragmentPageAdapter(
                 getSupportFragmentManager(), MainActivity.this);
@@ -152,6 +169,11 @@ public class MainActivity extends AppCompatActivity{
             public void onPageSelected(int i) {
                 Log.d(Tag, "page select "+i);
                 model.select(i);
+                mAnimatedFrame.removeViewAt(0);
+                if (i==0) {
+                    mAnimatedFrame.addView(haloView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                }
+                else if (i==1) mAnimatedFrame.addView(rainyView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             }
 
             @Override

@@ -13,8 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <j.com.weatherapp.surfaceview.HaloView
-            android:id="@+id/background_view1"
+        <FrameLayout
+            android:id="@+id/frame_mid_anim"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

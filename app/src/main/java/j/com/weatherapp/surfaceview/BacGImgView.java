@@ -70,9 +70,13 @@ public class BacGImgView extends SurfaceView implements SurfaceHolder.Callback{
         Log.d(this.getClass().getSimpleName(),"surfaceCreated" + this.getWidth());
         try {
             mCanvas = mSurfaceHolder.lockCanvas();
-            synchronized (mSurfaceHolder){
-                draw(mCanvas);
-            }
+//            synchronized (mSurfaceHolder){
+//                draw(mCanvas);
+//            }
+            CenterCrop();
+            Log.d(this.getClass().getSimpleName(),"onDraw" + this.getWidth());
+            mCanvas.drawColor(Color.BLACK);
+            mCanvas.drawBitmap(bitmap, null, targetRect, mPaint);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

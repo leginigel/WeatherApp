@@ -24,6 +24,7 @@ public class HaloView extends SurfaceView implements SurfaceHolder.Callback, Run
     private Paint mPaint;
     private Paint mPaintFill;
     private Path mPath;
+    private boolean isRunning = false;
     private int x = 0, y = 0, i = 0, j = 0;
 
     public HaloView(Context context) {
@@ -63,6 +64,7 @@ public class HaloView extends SurfaceView implements SurfaceHolder.Callback, Run
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(this.getClass().getSimpleName(),"surfaceCreated" + this.getWidth());
         Log.d(this.getClass().getSimpleName(),"surfaceCreated" + this.getHeight());
+        isRunning = true;
         new Thread(this).start();
     }
 
@@ -75,18 +77,27 @@ public class HaloView extends SurfaceView implements SurfaceHolder.Callback, Run
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.d(this.getClass().getSimpleName(),"surfaceDestroyed" + this.getWidth());
+        Log.d(this.getClass().getSimpleName(),"surfaceDestroyed" + this.getHeight());
+        isRunning = false;
 
+    }
+
+    public void setRunning(boolean running) {
+        isRunning = running;
     }
 
     @Override
     public void run() {
-        while(true) {
+        while(isRunning) {
             try {
                 mCanvas = mSurfaceHolder.lockCanvas();
                 mCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 //                mCanvas.drawPath(mPath, mPaint);
                 mCanvas.drawCircle(x, y, 20, mPaint);
-
+//                mCanvas.save();
+//                mCanvas.translate(100, 100);
+//                mCanvas.restore();
                 drawUpperHalo();
                 drawLowerHalo();
             } catch (Exception e) {
@@ -108,9 +119,9 @@ public class HaloView extends SurfaceView implements SurfaceHolder.Callback, Run
             x += 1;
             y = (int) (100 * Math.sin(2 * x * Math.PI / 180) + 400);
             mPath.lineTo(x, y);
-            mSurfaceHolder.lockCanvas(new Rect(0, 0, 0, 0));
-            mCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-            mSurfaceHolder.unlockCanvasAndPost(mCanvas);
+//            mSurfaceHolder.lockCanvas(new Rect(0, 0, 0, 0));
+//            mCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+//            mSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
     }
 
