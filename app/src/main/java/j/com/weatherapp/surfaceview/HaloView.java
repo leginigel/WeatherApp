@@ -3,12 +3,14 @@ package j.com.weatherapp.surfaceview;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -39,9 +41,6 @@ public class HaloView extends SurfaceView implements SurfaceHolder.Callback, Run
         super(context, attributeSet, i);
         mPaint = new Paint();
         mPaint.setColor(Color.BLACK);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setAntiAlias(true);
-        mPaint.setStrokeWidth(10);
         mPaintFill = new Paint();
         mPaintFill.setStyle(Paint.Style.FILL);
         mPaintFill.setAntiAlias(true);
@@ -80,7 +79,7 @@ public class HaloView extends SurfaceView implements SurfaceHolder.Callback, Run
         Log.d(this.getClass().getSimpleName(),"surfaceDestroyed" + this.getWidth());
         Log.d(this.getClass().getSimpleName(),"surfaceDestroyed" + this.getHeight());
         isRunning = false;
-
+        Thread.interrupted();
     }
 
     public void setRunning(boolean running) {
@@ -95,6 +94,10 @@ public class HaloView extends SurfaceView implements SurfaceHolder.Callback, Run
                 mCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 //                mCanvas.drawPath(mPath, mPaint);
                 mCanvas.drawCircle(x, y, 20, mPaint);
+//                Shader shader = new LinearGradient(0, 0, 0, getHeight(),
+//                        Color.argb(255, 0, 0, 102), Color.argb(150,50, 50, 50), Shader.TileMode.CLAMP);
+//                mPaint.setShader(shader);
+//                mCanvas.drawRect(0, 0, getWidth(), getHeight(), mPaint);
 //                mCanvas.save();
 //                mCanvas.translate(100, 100);
 //                mCanvas.restore();

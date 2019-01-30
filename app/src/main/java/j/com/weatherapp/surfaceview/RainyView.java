@@ -8,9 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.graphics.Shader;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -28,7 +26,8 @@ public class RainyView extends SurfaceView implements SurfaceHolder.Callback,Run
     private Path mPath;
     private Set<Rain> mRainSet;
     private boolean isRunning = false;
-    int x = 0, y = 0, count = 60;
+    int x = 0, y = 0, count = 50;
+    DrawShield rainShield = () -> drawRainShield();
 
     public RainyView(Context context) {
         this(context, null);
@@ -52,22 +51,14 @@ public class RainyView extends SurfaceView implements SurfaceHolder.Callback,Run
         mPaintRain.setAntiAlias(true);
 
         mRainSet = new HashSet<>();
-
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d(this.getClass().getSimpleName(),"surfaceCreated" + this.getWidth());
         Log.d(this.getClass().getSimpleName(),"surfaceCreated" + this.getHeight());
-        mRainSet.clear();
-        for (int i = 0;i < count;i++) {
-            Rain rain = new Rain(
-                    1 + new Random().nextInt(getWidth()-1),
-                    1 + new Random().nextInt(getHeight()-1),
-                    20 + new Random().nextInt(10)
-            );
-            mRainSet.add(rain);
-        }
+
+        initRain();
         isRunning = true;
         new Thread(this).start();
     }
@@ -82,7 +73,7 @@ public class RainyView extends SurfaceView implements SurfaceHolder.Callback,Run
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         isRunning = false;
-
+        Thread.interrupted();
     }
 
     public void setRunning(boolean running) {
@@ -96,11 +87,12 @@ public class RainyView extends SurfaceView implements SurfaceHolder.Callback,Run
                 mCanvas = mSurfaceHolder.lockCanvas();
                 mCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 //                mCanvas.drawPath(mPath, mPaint);
-                mCanvas.drawCircle(x, y, 20, mPaint);
+//                mCanvas.drawCircle(x, y, 20, mPaint);
 //                mCanvas.save();
 //                mCanvas.translate(100, 100);
 //                mCanvas.restore();
-                drawRainShield();
+//                drawRainShield();
+                rainShield.onDrawShield();
                 drawRain();
 
             } catch (Exception e) {
@@ -116,22 +108,35 @@ public class RainyView extends SurfaceView implements SurfaceHolder.Callback,Run
         }
     }
 
+    private void initRain(){
+        mRainSet.clear();
+        for (int i = 0;i < count;i++) {
+            Rain rain = new Rain(
+                    1 + new Random().nextInt(getWidth()-1),
+                    1 + new Random().nextInt(getHeight()-1),
+                    120 + new Random().nextInt(40)
+            );
+            mRainSet.add(rain);
+        }
+    }
+
     public void drawRainShield(){
         Shader shader = new LinearGradient(0, 0, 0, getHeight(),
-                Color.argb(255, 1, 50, 128), Color.argb(150,98, 120, 132), Shader.TileMode.CLAMP);
+                Color.argb(255, 1, 50, 128), Color.argb(150,120, 120, 120), Shader.TileMode.CLAMP);
         mPaint.setShader(shader);
         mCanvas.drawRect(0, 0, getWidth(), getHeight(), mPaint);
     }
 
-    public void drawRain(){
-        int gSpeed = 20;
+    private void drawRain(){
+        int gSpeed = 80;
         for (Rain r : mRainSet){
-            if ((r.y + r.length - gSpeed / 2) > getHeight()) r.reset();
+            if ((r.y + r.length - gSpeed) > getHeight()) r.reset();
             if (r.length == 0) {
-                r.length = gSpeed + new Random().nextInt(gSpeed / 2);
+                r.length = gSpeed + gSpeed / 2 + new Random().nextInt(gSpeed / 2);
                 r.y = 0;
                 r.x = 1 + new Random().nextInt(getWidth()-1);
             }
+            mPaintRain.setAlpha(50 + new Random().nextInt(50));
             mCanvas.drawLine( r.x, r.y, r.x, r.y + r.length, mPaintRain);
             r.y += gSpeed;
         }
@@ -156,5 +161,9 @@ public class RainyView extends SurfaceView implements SurfaceHolder.Callback,Run
             this.y = 0;
             this.length = 0;
         }
+    }
+
+    interface DrawShield{
+        void onDrawShield();
     }
 }

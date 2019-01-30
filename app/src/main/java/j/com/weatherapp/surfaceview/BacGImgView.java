@@ -5,9 +5,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -26,6 +30,7 @@ public class BacGImgView extends SurfaceView implements SurfaceHolder.Callback{
     private RectF targetRect;
 
     private int x = 0, y = 0;
+    private boolean isBlack = false;
     public BacGImgView(Context context) {
         this(context, null);
     }
@@ -59,8 +64,8 @@ public class BacGImgView extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        CenterCrop();
-        Log.d(this.getClass().getSimpleName(),"onDraw" + this.getWidth());
+//        CenterCrop();
+        Log.d(this.getClass().getSimpleName(),"onDraw" + bitmap.getWidth());
         canvas.drawColor(Color.BLACK);
         canvas.drawBitmap(bitmap, null, targetRect, mPaint);
     }
@@ -73,6 +78,7 @@ public class BacGImgView extends SurfaceView implements SurfaceHolder.Callback{
 //            synchronized (mSurfaceHolder){
 //                draw(mCanvas);
 //            }
+//            draw(mCanvas);
             CenterCrop();
             Log.d(this.getClass().getSimpleName(),"onDraw" + this.getWidth());
             mCanvas.drawColor(Color.BLACK);
@@ -93,5 +99,30 @@ public class BacGImgView extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
 
+    }
+
+    public void switchBlackScreen(boolean isChanging){
+        try {
+            mCanvas = mSurfaceHolder.lockCanvas();
+            if (isChanging) {
+                Paint p = new Paint();
+                ColorFilter filter = new LightingColorFilter(Color.argb(150,80, 80, 80), 0);
+//                p.setColorFilter(filter);
+//                p.setAlpha(100);
+                mCanvas.drawBitmap(bitmap, null, targetRect, mPaint);
+                Shader shader = new LinearGradient(0, 0, 0, getHeight(),
+                        Color.argb(255, 1, 50, 128), Color.argb(150,120, 120, 120), Shader.TileMode.CLAMP);
+                p.setShader(shader);
+                mCanvas.drawRect(0, 0, getWidth(), getHeight(), p);
+            } else {
+                mCanvas.drawColor(Color.BLACK);
+                mCanvas.drawBitmap(bitmap, null, targetRect, mPaint);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (mCanvas != null)
+                mSurfaceHolder.unlockCanvasAndPost(mCanvas);
+        }
     }
 }
