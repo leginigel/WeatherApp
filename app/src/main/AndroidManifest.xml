@@ -15,7 +15,11 @@
         <provider
             android:name=".Data.WeatherProvider"
             android:authorities="com.j.provider.Data.WeatherProvider" />
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

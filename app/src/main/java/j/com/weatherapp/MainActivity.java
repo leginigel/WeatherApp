@@ -1,12 +1,21 @@
 package j.com.weatherapp;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.MessagingStyle;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,9 +36,11 @@ import java.util.List;
 import java.util.Set;
 
 import j.com.weatherapp.surfaceview.BacGImgView;
+import j.com.weatherapp.surfaceview.CloudView;
 import j.com.weatherapp.surfaceview.HaloView;
 import j.com.weatherapp.surfaceview.RainyView;
 import j.com.weatherapp.surfaceview.SinWaveView;
+import j.com.weatherapp.surfaceview.SnowfallView;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -57,10 +68,14 @@ public class MainActivity extends AppCompatActivity{
         rainyView.setZOrderMediaOverlay(true);
         HaloView haloView = new HaloView(this);
         haloView.setZOrderMediaOverlay(true);
+        SnowfallView snowfallView = new SnowfallView(this);
+        snowfallView.setZOrderMediaOverlay(true);
+        CloudView cloudView = new CloudView(this);
+        cloudView.setZOrderMediaOverlay(true);
         mAnimatedFrame = findViewById(R.id.frame_mid_anim);
-        mAnimatedFrame.addView(rainyView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        mAnimatedFrame.removeViewAt(0);
-        mAnimatedFrame.addView(haloView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+//        mAnimatedFrame.addView(rainyView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+//        mAnimatedFrame.removeViewAt(0);
+        mAnimatedFrame.addView(cloudView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
 //        SinWaveView sinWaveView = findViewById(R.id.background_view1);
 //        sinWaveView.setZOrderOnTop(false);
@@ -169,20 +184,91 @@ public class MainActivity extends AppCompatActivity{
             public void onPageSelected(int i) {
                 Log.d(Tag, "page select "+i);
                 model.select(i);
+//                bacGImgView.switchBlackScreen(true);
                 mAnimatedFrame.removeViewAt(0);
                 if (i==0) {
-                    mAnimatedFrame.addView(haloView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                    mAnimatedFrame.addView(haloView, 0,
+                            new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 }
-                else if (i==1) mAnimatedFrame.addView(rainyView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                else if (i==1)
+                    mAnimatedFrame.addView(snowfallView, 0,
+                            new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+//                bacGImgView.switchBlackScreen(false);
             }
 
             @Override
             public void onPageScrollStateChanged(int i) {
 
+                if (i == ViewPager.SCROLL_STATE_DRAGGING) {
+                    Log.d(Tag, "SCROLL_STATE_DRAGGING "+i);
+//                    bacGImgView.switchBlackScreen(true);
+//                    bacGImgView.setAlpha(0);
+                }
+                else if (i == ViewPager.SCROLL_STATE_SETTLING) {
+                    Log.d(Tag, "SCROLL_STATE_SETTLING "+i);
+//                    bacGImgView.switchBlackScreen(false);
+//                    bacGImgView.setAlpha(1);
+                }
+                else if (i == ViewPager.SCROLL_STATE_IDLE) {
+                    Log.d(Tag, "SCROLL_STATE_IDLE " + i);
+                }
             }
         });
 
         mRequestQueue = Volley.newRequestQueue(this);
+        createNotificationChannel();
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                      | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "weather")
+                .setSmallIcon(R.drawable.ic_share_white)
+                .setContentTitle("Weather Broadcast")
+                .setContentText("Mother")
+                .setStyle(new NotificationCompat.BigPictureStyle()
+                )
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+//                .setTimeoutAfter(10000)
+                .setOngoing(true)
+                .setAutoCancel(true);
+//        setAutoCancel() removes the notification when the user taps it.
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+// notificationId is a unique int for each notification that you must define
+        notificationManager.notify(7, mBuilder.build());
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "weather"/*getString(R.string.channel_name)*/;
+            String description = "description"/*getString(R.string.channel_description)*/;
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("weather", name, importance);
+            channel.setDescription(description);
+//            channel.setLightColor();
+//            channel.setSound();
+//            channel.setLockscreenVisibility();
+//            channel.setVibrationPattern();
+//            You don't have to set the sounds/lights/vibration, you CAN do it.
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+//        else {
+//            builder.setContentTitle(context.getString(R.string.app_name))
+//                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+//                    .setColor(ContextCompat.getColor(context, R.color.transparent))
+//                    .setVibrate(new long[]{100, 250})
+//                    .setLights(Color.YELLOW, 500, 5000)
+//                    .setAutoCancel(true);
+//        }
     }
 
     @Override
