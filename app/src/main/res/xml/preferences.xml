@@ -8,13 +8,15 @@
             android:key="update_open"
             android:summary="Update weather data when open App every time"
             android:title="Open Then Update"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            android:icon="@drawable/ic_toc_black_24dp"/>
 
         <android.support.v7.preference.SwitchPreferenceCompat
             android:key="update_auto"
             android:title="Auto Update"
             android:summary="Auto update the data of weather"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            android:icon="@drawable/ic_share_white" />
 
 
         <android.support.v7.preference.ListPreference
@@ -25,17 +27,32 @@
             android:entryValues="@array/time_key"
             android:summary="Every 1 hour"
             android:defaultValue="settings_update_time_24"
-            android:title="Update Duration" />
+            android:title="Update Duration"
+            android:icon="@android:drawable/ic_popup_sync" />
 
     </android.support.v7.preference.PreferenceCategory>
 
-    <android.support.v7.preference.ListPreference
-        android:title="Metric Converter"
-        android:dialogTitle="Metric"
-        android:entries="@array/temp_unit_value"
-        android:entryValues="@array/temp_unit_key"
-        android:key="metric"
-        android:summary="@string/settings_temperature_unit_auto"
-        android:defaultValue="@string/settings_temperature_unit_auto" />
+    <PreferenceCategory
+        android:title="Setting"
+        android:icon="@drawable/ic_settings_black_24dp">
+
+        <EditTextPreference
+            android:title="Location"
+            android:summary="Please provide your location"
+            android:key="location"
+            android:dialogTitle="Location Name"
+            android:defaultValue="Taipei"
+            android:icon="@drawable/ic_settings_black_24dp"/>
+
+        <android.support.v7.preference.ListPreference
+            android:title="Metric Converter"
+            android:dialogTitle="Metric"
+            android:entries="@array/temp_unit_value"
+            android:entryValues="@array/temp_unit_key"
+            android:key="metric"
+            android:summary="@string/settings_temperature_unit_auto"
+            android:defaultValue="@string/settings_temperature_unit_auto"
+            android:icon="@drawable/ic_settings_black_24dp"/>
+    </PreferenceCategory>
 
 </PreferenceScreen>

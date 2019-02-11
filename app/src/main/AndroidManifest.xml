@@ -26,6 +26,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".service.TimeService"
+            android:exported="false"/>
+        <receiver android:name=".service.TimeReceiver"
+            android:process=":remote"/>
+            <!--android:exported="true"-->
     </application>
 
 </manifest>

@@ -1,15 +1,22 @@
 package j.com.weatherapp;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
+import android.support.v4.app.RemoteInput;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
@@ -26,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -35,6 +43,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import j.com.weatherapp.service.TimeReceiver;
+import j.com.weatherapp.service.TimeService;
 import j.com.weatherapp.surfaceview.BacGImgView;
 import j.com.weatherapp.surfaceview.CloudView;
 import j.com.weatherapp.surfaceview.HaloView;
@@ -56,6 +66,7 @@ public class MainActivity extends AppCompatActivity{
     private ViewPager viewPager;
     private WeatherFragmentPageAdapter WFPA;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,7 +110,10 @@ public class MainActivity extends AppCompatActivity{
         });
         model.getSelected().observe(this, select ->{
             Log.d(Tag, "observe city select");
-            viewPager.setCurrentItem(select);
+            if (select != null) {
+                viewPager.setCurrentItem(select);
+                onNotifyCity(this);
+            }
         });
 
 //        ActivityMainBinding binding;
@@ -216,30 +230,25 @@ public class MainActivity extends AppCompatActivity{
         });
 
         mRequestQueue = Volley.newRequestQueue(this);
+
         createNotificationChannel();
-        // Create an explicit intent for an Activity in your app
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                      | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "weather")
-                .setSmallIcon(R.drawable.ic_share_white)
-                .setContentTitle("Weather Broadcast")
-                .setContentText("Mother")
-                .setStyle(new NotificationCompat.BigPictureStyle()
-                )
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(pendingIntent)
-//                .setTimeoutAfter(10000)
-                .setOngoing(true)
-                .setAutoCancel(true);
-//        setAutoCancel() removes the notification when the user taps it.
+        Intent i = new Intent(this, TimeReceiver.class);
+        i.putExtra("f", "b");
+        PendingIntent p = PendingIntent.getBroadcast(this, TimeReceiver.REQUEST_CODE,
+                i, PendingIntent.FLAG_UPDATE_CURRENT);
+//        sendBroadcast(i);
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        AlarmManager a = (AlarmManager) getSystemService(ALARM_SERVICE);
+        a.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+                AlarmManager.INTERVAL_FIFTEEN_MINUTES/60 ,p);
+//        a.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),p);
 
-// notificationId is a unique int for each notification that you must define
-        notificationManager.notify(7, mBuilder.build());
+//        Intent i = new Intent(this, TimeService.class);
+//        i.putExtra("f", "b");
+//        PendingIntent p = PendingIntent.getService(this, 0,
+//                i, PendingIntent.FLAG_CANCEL_CURRENT);
+//        startService(i);
     }
 
     private void createNotificationChannel() {
@@ -251,6 +260,7 @@ public class MainActivity extends AppCompatActivity{
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel("weather", name, importance);
             channel.setDescription(description);
+            channel.setShowBadge(false);
 //            channel.setLightColor();
 //            channel.setSound();
 //            channel.setLockscreenVisibility();
@@ -269,6 +279,50 @@ public class MainActivity extends AppCompatActivity{
 //                    .setLights(Color.YELLOW, 500, 5000)
 //                    .setAutoCancel(true);
 //        }
+    }
+
+    public static void onNotifyCity(@NonNull Context context/*int select*/){
+
+        RemoteInput remoteInput = new RemoteInput.Builder("key").setLabel("Type Message").build();
+        // Generate the notification action
+        NotificationCompat.Action action = new NotificationCompat.Action.Builder(
+                R.drawable.ic_share_white, "Reply", null)
+                .addRemoteInput(remoteInput).build();
+//        Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources() ,R.drawable.ic_search_black_24dp);
+//        PageFragment pg = (PageFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.viewpager + ":" + viewPager.getCurrentItem());
+//        PageFragment pg = (PageFragment) WFPA.getItem(0);
+// Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        // Get the layouts to use in the custom notification
+//        RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_small);
+//        RemoteViews notificationLayoutExpanded = new RemoteViews(getPackageName(), R.layout.notification_large);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, "weather")
+                .setSmallIcon(R.drawable.ic_share_white)
+                .setContentTitle(cityList.get(0/*select*/))
+                .setContentText("Mother")
+//                .setStyle(new NotificationCompat.BigPictureStyle())
+//                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+//                .setCustomContentView(notificationLayout)
+//                .setCustomBigContentView(notificationLayoutExpanded)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources() ,R.drawable.ic_search_black_24dp))
+                .addAction(R.drawable.ic_share_white, "Yes",null)
+                .addAction(action)
+//                .setSound()
+//                .setTimeoutAfter(10000)
+//                .setOngoing(true)
+                .setAutoCancel(true);
+//        setAutoCancel() removes the notification when the user taps it.
+
+//        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+// notificationId is a unique int for each notification that you must define
+        notificationManager.notify(7, mBuilder.build());
     }
 
     @Override
