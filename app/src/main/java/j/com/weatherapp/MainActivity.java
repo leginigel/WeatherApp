@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity{
     public static String url ="content://com.j.provider.Data.WeatherProvider/city";
     public static RequestQueue mRequestQueue;
     public static SharedPreferences sharedPreferences;
+    public static boolean FIRST_OPEN = true;
     private SharedPreferences.Editor editor;
     private SharedViewModel model;
     public static List<String> cityList = new ArrayList<>();
@@ -115,6 +117,8 @@ public class MainActivity extends AppCompatActivity{
                 onNotifyCity(this);
             }
         });
+
+        model.getLocation(this);
 
 //        ActivityMainBinding binding;
         bottomNavigationView = findViewById(R.id.navigationView);
@@ -323,6 +327,31 @@ public class MainActivity extends AppCompatActivity{
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 // notificationId is a unique int for each notification that you must define
         notificationManager.notify(7, mBuilder.build());
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch(requestCode){
+            case 666: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    model.getLocation(this);
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override

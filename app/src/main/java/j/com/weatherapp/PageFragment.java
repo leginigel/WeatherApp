@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
@@ -39,6 +40,7 @@ import j.com.weatherapp.Data.VolleyResponseListener;
 import j.com.weatherapp.Data.VolleyWeather;
 import j.com.weatherapp.Weather.ForecastsAdapter;
 
+import static j.com.weatherapp.MainActivity.FIRST_OPEN;
 import static j.com.weatherapp.Utils.Scale;
 import static j.com.weatherapp.MainActivity.url;
 
@@ -63,6 +65,7 @@ public class PageFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt("PAGE",page);
         args.putString("City", city);
+        Log.i("Fragment newInstance", "new city:" + city);
         PageFragment fragment = new PageFragment();
         fragment.setArguments(args);
         return fragment;
@@ -80,10 +83,12 @@ public class PageFragment extends Fragment {
 
         mCityWeather = new CityWeather();
         mVolleyWeather = new VolleyWeather(getActivity(), mCityWeather);
+
+        setPageListener();
     }
 
-    TextView city, temperature, temperature_range, real_feel, weather_text, pressure, humidity
-            , uv_index, observer_time;
+    TextView city, temperature, temperature_range, real_feel, weather_text, pressure, humidity,
+            uv_index, observer_time;
     private ForecastsAdapter rvAdapter;
     private RecyclerView rv;
 
@@ -137,10 +142,8 @@ public class PageFragment extends Fragment {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (mKey != null)
-                    checkCityExist();
-                else
-                    mVolleyWeather.fetchLocation(mCity, listener, false);
+                if (mKey != null) mVolleyWeather.fetchCurrentCondition(mKey, listener, true);
+                else mVolleyWeather.fetchLocation(mCity, listener, false);
             }
         });
 
@@ -185,7 +188,6 @@ public class PageFragment extends Fragment {
                 android.R.color.holo_red_light);
 
         // TextViews set the data at listener response
-
         city = view.findViewById(R.id.city);
         temperature = view.findViewById(R.id.temperature);
         temperature_range = view.findViewById(R.id.temperature_range);
@@ -195,16 +197,10 @@ public class PageFragment extends Fragment {
         humidity = view.findViewById(R.id.humidity);
         uv_index = view.findViewById(R.id.uv);
         observer_time = view.findViewById(R.id.observe_time);
-
         city.setText(mCity);
 
-        setPageListener();
-        if (mKey != null){
-        checkCityExist();
-        }
-        else{
-            mVolleyWeather.fetchLocation(mCity, listener, false);
-        }
+        if(mKey != null) checkCityExist();
+        else mVolleyWeather.fetchLocation(mCity, listener, false);
         return view;
     }
 
@@ -324,7 +320,13 @@ public class PageFragment extends Fragment {
 
                         Log.v(mCity + " Cursor CurrentCon", cursor.getString(8));
                         Log.v(mCity + " Cursor FiveForecasts", cursor.getString(9));
-//                        mVolleyWeather.fetchCurrentCondition(mKey, listener, true);
+
+                        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                        boolean open_updated = sharedPref.getBoolean("update_open", false);
+                        if(FIRST_OPEN && open_updated) {
+                            Log.d(this.getClass().getSimpleName(), "Open Updated");
+//                            mVolleyWeather.fetchCurrentCondition(mKey, listener, true);
+                        }
                         setTodayCard();
                     }
                     else {

@@ -14,6 +14,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.DialogPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
@@ -42,7 +43,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
     private SharedViewModel model;
     private Preference.OnPreferenceChangeListener onListChange = (Preference preference, Object o) -> {
         Log.d("onListChange", preference.getKey() + (String) o);
-        ListPreference lp = (ListPreference)findPreference(preference.getKey());
+        ListPreference lp = (ListPreference) preference;
         CharSequence[] entries = lp.getEntries();
         lp.setSummary(entries[lp.findIndexOfValue((String) o)]);
         if ("auto_update_value".equals(preference.getKey())) {
@@ -60,7 +61,9 @@ public class SettingFragment extends PreferenceFragmentCompat {
         return true;
     };
     private Preference.OnPreferenceClickListener onCheckChange = (Preference preference) ->{
-        Log.d("onCheckChange", preference.getKey() );
+        CheckBoxPreference pfCheckBox = (CheckBoxPreference) preference;
+        Log.d("onCheckChange", preference.getKey() + pfCheckBox.isChecked() );
+
         return true;
     };
     private EditTextPreference.OnPreferenceChangeListener onEditChange = (Preference preference, Object o) ->{
@@ -152,10 +155,10 @@ public class SettingFragment extends PreferenceFragmentCompat {
             etpf.setTitle("Location(TODO)");
             etpf.setOnPreferenceChangeListener(onEditChange);
             etpf.getEditText().setOnFocusChangeListener((v, hasFocus) -> {
-                if (hasFocus) {
+//                if (hasFocus) {
 //                    MainActivity.bottomNavigationView.setVisibility(View.GONE);
 //                    MainActivity.bottomNavigationView.setAlpha(0);
-                }
+//                }
 //                    else {
 //                        MainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
 //                        MainActivity.bottomNavigationView.animate().alpha(1).setDuration(1000).start();

@@ -19,6 +19,8 @@ import android.view.SurfaceView;
 
 import j.com.weatherapp.R;
 
+import static j.com.weatherapp.MainActivity.FIRST_OPEN;
+
 public class BacGImgView extends SurfaceView implements SurfaceHolder.Callback{
 
     private SurfaceHolder mSurfaceHolder;
@@ -72,6 +74,11 @@ public class BacGImgView extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        // Move the Main onResume Disable First Open to After Fragment
+        if(FIRST_OPEN){
+            Log.d(this.getClass().getSimpleName(),"Disable First Run");
+            FIRST_OPEN = false;
+        }
         Log.d(this.getClass().getSimpleName(),"surfaceCreated" + this.getWidth());
         try {
             mCanvas = mSurfaceHolder.lockCanvas();
