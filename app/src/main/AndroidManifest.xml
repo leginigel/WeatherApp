@@ -35,6 +35,9 @@
         <receiver android:name=".service.TimeReceiver"
             android:process=":remote"/>
             <!--android:exported="true"-->
+        <service
+            android:name=".service.FetchAddressIntentService"
+            android:exported="false"/>
     </application>
 
 </manifest>

@@ -6,11 +6,15 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -31,6 +35,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import j.com.weatherapp.City;
+import j.com.weatherapp.service.FetchAddressIntentService;
 
 public class SharedViewModel extends ViewModel {
 
@@ -63,27 +68,14 @@ public class SharedViewModel extends ViewModel {
             }
             return;
         }
-        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
 
         client.getLastLocation()
                 .addOnCompleteListener((Activity) context, new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
-                        Log.d("ViewModel", "Latitude"+task.getResult().getLatitude());
-                        Log.d("ViewModel", "Longitude"+task.getResult().getLongitude());
-                        try {
-                            List<Address> addresses = geocoder.getFromLocation(task.getResult().getLatitude(), task.getResult().getLongitude(), 1);
-//                            Log.d("CityName", addresses.get(0).getAddressLine(0));
-//                            Log.d("StateName", addresses.get(0).getAddressLine(1));
-//                            Log.d("CountryName", addresses.get(0).getAddressLine(2));
-//                            Log.d("AdminArea", addresses.get(0).getAdminArea());
-//                            Log.d("CountryName", addresses.get(0).getCountryName());
-//                            Log.d("FeatureName", addresses.get(0).getFeatureName());
-//                            Log.d("SubAdminArea", addresses.get(0).getSubAdminArea());
-//                            Log.d("Locality", addresses.get(0).getLocality());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+//                        Log.d("ViewModel", "Latitude"+task.getResult().getLatitude());
+//                        Log.d("ViewModel", "Longitude"+task.getResult().getLongitude());
+
                     }
                 });
         client.getLastLocation()
@@ -92,15 +84,44 @@ public class SharedViewModel extends ViewModel {
                     public void onSuccess(Location location) {
                         Log.d("ViewModel", "Latitude"+location.getLatitude());
                         Log.d("ViewModel", "Longitude"+location.getLongitude());
-                        try {
-                            List<Address> addresses = geocoder.getFromLocationName("London", 10);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        Intent intent = new Intent(context, FetchAddressIntentService.class);
+                        AddressResultReceiver addressResultReceiver = new AddressResultReceiver(new Handler());
+                        intent.putExtra(FetchAddressIntentService.Constants.RECEIVER, addressResultReceiver);
+                        intent.putExtra(FetchAddressIntentService.Constants.LOCATION_DATA_EXTRA, location);
+                        context.startService(intent);
                     }
                 });
     }
 
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            if (resultData == null) {
+                return;
+            }
+
+            // Display the address string
+            // or an error message sent from the intent service.
+            String mAddressOutput = resultData.getString(FetchAddressIntentService.Constants.RESULT_DATA_KEY);
+            if (mAddressOutput == null) {
+                mAddressOutput = "";
+            }
+//            displayAddressOutput();
+            Log.d("onReceiveResult", "mAddressOutput "+ mAddressOutput);
+
+            // Show a toast message if an address was found.
+            if (resultCode == FetchAddressIntentService.Constants.SUCCESS_RESULT) {
+//                showToast(getString(R.string.address_found));
+                Log.d("onReceiveResult", "address_found ");
+            }
+
+        }
+    }
 
 
     public void addCity(City city){
