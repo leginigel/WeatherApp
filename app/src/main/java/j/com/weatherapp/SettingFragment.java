@@ -14,6 +14,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.DialogPreference;
 import android.support.v7.preference.ListPreference;
@@ -26,20 +27,17 @@ import android.view.ViewGroup;
 import com.takisoft.fix.support.v7.preference.EditTextPreference;
 import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat;
 
+import java.util.Set;
+
+import j.com.weatherapp.preference.MapPreference;
+import j.com.weatherapp.preference.MapPreferenceFragmentCompat;
 import j.com.weatherapp.service.TimeReceiver;
 
 import static android.content.Context.ALARM_SERVICE;
 
-/**
- * A simple {@link PreferenceFragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SettingFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- */
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class SettingFragment extends PreferenceFragmentCompat {
 
-    private OnFragmentInteractionListener mListener;
     private SharedViewModel model;
     private Preference.OnPreferenceChangeListener onListChange = (Preference preference, Object o) -> {
         Log.d("onListChange", preference.getKey() + (String) o);
@@ -111,28 +109,9 @@ public class SettingFragment extends PreferenceFragmentCompat {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -165,23 +144,42 @@ public class SettingFragment extends PreferenceFragmentCompat {
 //                    }
             });
 //            Log.d("Tree", "Test " + visibility);
-
+        }
+        else if ("map".equals(preference.getKey())){
+            DialogPreference dlpf = (DialogPreference) findPreference(preference.getKey());
+            dlpf.setDialogTitle("PAM");
+            Set<String> set = preference.getSharedPreferences().getStringSet(preference.getKey(), null);
+            if (set!=null) {
+                for (String i:set)
+                    Log.d(this.getClass().getSimpleName(), "Map"+i);
+            }
         }
         return super.onPreferenceTreeClick( preference);
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    @Override
+    public void onDisplayPreferenceDialog(Preference preference) {
+        // Try if the preference is one of our custom Preferences
+        DialogFragment dialogFragment = null;
+        if (preference instanceof MapPreference) {
+            // Create a new instance of TimePreferenceDialogFragment with the key of the related
+            // Preference
+            Log.d(this.getClass().getSimpleName(), "preference instanceof MapPreference");
+            dialogFragment = MapPreferenceFragmentCompat
+                    .newInstance(preference.getKey());
+        }
+
+        // If it was one of our cutom Preferences, show its dialog
+        if (dialogFragment != null) {
+            Log.d(this.getClass().getSimpleName(), "dialogFragment != null");
+            dialogFragment.setTargetFragment(this, 0);
+            dialogFragment.show(this.getFragmentManager(),
+                    "android.support.v7.preference" +
+                            ".PreferenceFragment.DIALOG");
+        }
+        // Could not be handled here. Try with the super method.
+        else {
+            super.onDisplayPreferenceDialog(preference);
+        }
     }
 }

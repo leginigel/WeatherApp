@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -30,6 +31,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -84,6 +86,13 @@ public class SharedViewModel extends ViewModel {
                     public void onSuccess(Location location) {
                         Log.d("ViewModel", "Latitude"+location.getLatitude());
                         Log.d("ViewModel", "Longitude"+location.getLongitude());
+                        Set<String> set = new HashSet<>();
+                        set.add("x" + String.valueOf(location.getLatitude()));
+                        set.add("y" + String.valueOf(location.getLongitude()));
+                        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+                        pref.edit()
+                                .putStringSet("map", set)
+                                .apply();
                         Intent intent = new Intent(context, FetchAddressIntentService.class);
                         AddressResultReceiver addressResultReceiver = new AddressResultReceiver(new Handler());
                         intent.putExtra(FetchAddressIntentService.Constants.RECEIVER, addressResultReceiver);

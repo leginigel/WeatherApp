@@ -33,8 +33,7 @@
     </android.support.v7.preference.PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Setting"
-        android:icon="@drawable/ic_settings_black_24dp">
+        android:title="Setting" >
 
         <EditTextPreference
             android:title="Location"
@@ -53,6 +52,12 @@
             android:summary="@string/settings_temperature_unit_auto"
             android:defaultValue="@string/settings_temperature_unit_auto"
             android:icon="@drawable/ic_settings_black_24dp"/>
+
+        <j.com.weatherapp.preference.MapPreference
+            android:key="map"
+            android:title="Map"
+            android:summary="Map"
+            />
     </PreferenceCategory>
 
 </PreferenceScreen>
