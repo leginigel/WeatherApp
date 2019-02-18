@@ -4,6 +4,8 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -52,6 +54,7 @@ import j.com.weatherapp.surfaceview.HaloView;
 import j.com.weatherapp.surfaceview.RainyView;
 import j.com.weatherapp.surfaceview.SinWaveView;
 import j.com.weatherapp.surfaceview.SnowfallView;
+import j.com.weatherapp.widget.WeatherWidgetProvider;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity{
         mAnimatedFrame = findViewById(R.id.frame_mid_anim);
 //        mAnimatedFrame.addView(rainyView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 //        mAnimatedFrame.removeViewAt(0);
-        mAnimatedFrame.addView(cloudView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+//        mAnimatedFrame.addView(cloudView, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
 //        SinWaveView sinWaveView = findViewById(R.id.background_view1);
 //        sinWaveView.setZOrderOnTop(false);
@@ -237,15 +240,15 @@ public class MainActivity extends AppCompatActivity{
 
         createNotificationChannel();
 
-        Intent i = new Intent(this, TimeReceiver.class);
-        i.putExtra("f", "b");
-        PendingIntent p = PendingIntent.getBroadcast(this, TimeReceiver.REQUEST_CODE,
-                i, PendingIntent.FLAG_UPDATE_CURRENT);
+//        Intent i = new Intent(this, TimeReceiver.class);
+//        i.putExtra("f", "b");
+//        PendingIntent p = PendingIntent.getBroadcast(this, TimeReceiver.REQUEST_CODE,
+//                i, PendingIntent.FLAG_UPDATE_CURRENT);
 //        sendBroadcast(i);
 
-        AlarmManager a = (AlarmManager) getSystemService(ALARM_SERVICE);
-        a.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
-                AlarmManager.INTERVAL_FIFTEEN_MINUTES/60 ,p);
+//        AlarmManager a = (AlarmManager) getSystemService(ALARM_SERVICE);
+//        a.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+//                AlarmManager.INTERVAL_FIFTEEN_MINUTES/60 ,p);
 //        a.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),p);
 
 //        Intent i = new Intent(this, TimeService.class);
@@ -253,6 +256,17 @@ public class MainActivity extends AppCompatActivity{
 //        PendingIntent p = PendingIntent.getService(this, 0,
 //                i, PendingIntent.FLAG_CANCEL_CURRENT);
 //        startService(i);
+
+        AppWidgetManager appWidgetManager = getSystemService(AppWidgetManager.class);
+        ComponentName provider = new ComponentName(this, WeatherWidgetProvider.class);
+        if(appWidgetManager.isRequestPinAppWidgetSupported()){
+            Intent pinnedWidgetCallbackIntent = new Intent();
+
+            PendingIntent successCallback = PendingIntent.getBroadcast(this, 0,
+                    pinnedWidgetCallbackIntent, 0);
+
+            appWidgetManager.requestPinAppWidget(provider, null, null/*successCallback*/);
+        }
     }
 
     private void createNotificationChannel() {

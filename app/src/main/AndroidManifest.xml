@@ -21,11 +21,10 @@
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBf3tEmdR18S-2v0E1i1x0oqcXJ9imntT4"/>
 
-        <provider
-            android:name=".Data.WeatherProvider"
+        <provider android:name=".Data.WeatherProvider"
             android:authorities="com.j.provider.Data.WeatherProvider" />
-        <activity
-            android:name=".MainActivity"
+
+        <activity android:name=".MainActivity"
             android:launchMode="singleTask"
             android:taskAffinity=""
             android:excludeFromRecents="true">
@@ -35,15 +34,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service
-            android:name=".service.TimeService"
+
+        <service android:name=".service.TimeService"
             android:exported="false"/>
+
         <receiver android:name=".service.TimeReceiver"
             android:process=":remote"/>
             <!--android:exported="true"-->
-        <service
-            android:name=".service.FetchAddressIntentService"
+        <service android:name=".service.FetchAddressIntentService"
             android:exported="false"/>
+
+        <receiver android:name=".widget.WeatherWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/weather_appwidget_info"/>
+        </receiver>
     </application>
 
 </manifest>

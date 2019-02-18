@@ -35,14 +35,6 @@
     <PreferenceCategory
         android:title="Setting" >
 
-        <EditTextPreference
-            android:title="Location"
-            android:summary="Please provide your location"
-            android:key="location"
-            android:dialogTitle="Location Name"
-            android:defaultValue="Taipei"
-            android:icon="@drawable/ic_settings_black_24dp"/>
-
         <android.support.v7.preference.ListPreference
             android:title="Metric Converter"
             android:dialogTitle="Metric"
@@ -53,10 +45,18 @@
             android:defaultValue="@string/settings_temperature_unit_auto"
             android:icon="@drawable/ic_settings_black_24dp"/>
 
+        <EditTextPreference
+            android:title="Location"
+            android:summary="Please provide your location"
+            android:key="location"
+            android:dialogTitle="Location Name"
+            android:defaultValue="Taipei"
+            android:icon="@drawable/ic_settings_black_24dp"/>
         <j.com.weatherapp.preference.MapPreference
             android:key="map"
             android:title="Map"
             android:summary="Map"
+            style="@style/AppPreference.DialogPreference"
             />
     </PreferenceCategory>
 
